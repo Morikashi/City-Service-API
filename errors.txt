@@ -1,0 +1,106 @@
+[INFO] ⏳ Waiting for FastAPI application...
+..............................[ERROR] FastAPI application failed to start within 60 seconds
+[ERROR] Check logs with: docker-compose logs app
+(base) mortezakashani@Mortezas-MacBook-Pro City-Service-API % docker-compose logs app
+city_service_app  | INFO:     Started server process [1]
+city_service_app  | INFO:     Waiting for application startup.
+city_service_app  | 2025-07-22 22:08:29,550 - app.main - INFO - 🚀 Starting City Service API...
+city_service_app  | 2025-07-22 22:08:29,578 - app.database - ERROR - Failed to initialize database: unexpected connection_lost() call
+city_service_app  | 2025-07-22 22:08:29,578 - app.main - ERROR - ❌ Failed to start application: unexpected connection_lost() call
+city_service_app  | ERROR:    Traceback (most recent call last):
+city_service_app  |   File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 677, in lifespan
+city_service_app  |     async with self.lifespan_context(app) as maybe_state:
+city_service_app  |   File "/usr/local/lib/python3.11/contextlib.py", line 210, in __aenter__
+city_service_app  |     return await anext(self.gen)
+city_service_app  |            ^^^^^^^^^^^^^^^^^^^^^
+city_service_app  |   File "/app/app/main.py", line 38, in lifespan
+city_service_app  |     await init_db()
+city_service_app  |   File "/app/app/database.py", line 95, in init_db
+city_service_app  |     await db_manager.initialize()
+city_service_app  |   File "/app/app/database.py", line 43, in initialize
+city_service_app  |     async with self.engine.begin() as conn:
+city_service_app  |   File "/usr/local/lib/python3.11/contextlib.py", line 210, in __aenter__
+city_service_app  |     return await anext(self.gen)
+city_service_app  |            ^^^^^^^^^^^^^^^^^^^^^
+city_service_app  |   File "/usr/local/lib/python3.11/site-packages/sqlalchemy/ext/asyncio/engine.py", line 1061, in begin
+city_service_app  |     async with conn:
+city_service_app  |   File "/usr/local/lib/python3.11/site-packages/sqlalchemy/ext/asyncio/base.py", line 125, in __aenter__
+city_service_app  |     return await self.start(is_ctxmanager=True)
+city_service_app  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+city_service_app  |   File "/usr/local/lib/python3.11/site-packages/sqlalchemy/ext/asyncio/engine.py", line 270, in start
+city_service_app  |     await greenlet_spawn(self.sync_engine.connect)
+city_service_app  |   File "/usr/local/lib/python3.11/site-packages/sqlalchemy/util/_concurrency_py3k.py", line 190, in greenlet_spawn
+city_service_app  |     result = context.throw(*sys.exc_info())
+city_service_app  |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+city_service_app  |   File "/usr/local/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 3268, in connect
+city_service_app  |     return self._connection_cls(self)
+city_service_app  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+city_service_app  |   File "/usr/local/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 145, in __init__
+city_service_app  |     self._dbapi_connection = engine.raw_connection()
+city_service_app  |                              ^^^^^^^^^^^^^^^^^^^^^^^
+city_service_app  |   File "/usr/local/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 3292, in raw_connection
+city_service_app  |     return self.pool.connect()
+city_service_app  |            ^^^^^^^^^^^^^^^^^^^
+city_service_app  |   File "/usr/local/lib/python3.11/site-packages/sqlalchemy/pool/base.py", line 452, in connect
+city_service_app  |     return _ConnectionFairy._checkout(self)
+city_service_app  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+city_service_app  |   File "/usr/local/lib/python3.11/site-packages/sqlalchemy/pool/base.py", line 1269, in _checkout
+city_service_app  |     fairy = _ConnectionRecord.checkout(pool)
+city_service_app  |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+city_service_app  |   File "/usr/local/lib/python3.11/site-packages/sqlalchemy/pool/base.py", line 716, in checkout
+city_service_app  |     rec = pool._do_get()
+city_service_app  |           ^^^^^^^^^^^^^^
+city_service_app  |   File "/usr/local/lib/python3.11/site-packages/sqlalchemy/pool/impl.py", line 169, in _do_get
+city_service_app  |     with util.safe_reraise():
+city_service_app  |   File "/usr/local/lib/python3.11/site-packages/sqlalchemy/util/langhelpers.py", line 146, in __exit__
+city_service_app  |     raise exc_value.with_traceback(exc_tb)
+city_service_app  |   File "/usr/local/lib/python3.11/site-packages/sqlalchemy/pool/impl.py", line 167, in _do_get
+city_service_app  |     return self._create_connection()
+city_service_app  |            ^^^^^^^^^^^^^^^^^^^^^^^^^
+city_service_app  |   File "/usr/local/lib/python3.11/site-packages/sqlalchemy/pool/base.py", line 393, in _create_connection
+city_service_app  |     return _ConnectionRecord(self)
+city_service_app  |            ^^^^^^^^^^^^^^^^^^^^^^^
+city_service_app  |   File "/usr/local/lib/python3.11/site-packages/sqlalchemy/pool/base.py", line 678, in __init__
+city_service_app  |     self.__connect()
+city_service_app  |   File "/usr/local/lib/python3.11/site-packages/sqlalchemy/pool/base.py", line 902, in __connect
+city_service_app  |     with util.safe_reraise():
+city_service_app  |   File "/usr/local/lib/python3.11/site-packages/sqlalchemy/util/langhelpers.py", line 146, in __exit__
+city_service_app  |     raise exc_value.with_traceback(exc_tb)
+city_service_app  |   File "/usr/local/lib/python3.11/site-packages/sqlalchemy/pool/base.py", line 898, in __connect
+city_service_app  |     self.dbapi_connection = connection = pool._invoke_creator(self)
+city_service_app  |                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+city_service_app  |   File "/usr/local/lib/python3.11/site-packages/sqlalchemy/engine/create.py", line 637, in connect
+city_service_app  |     return dialect.connect(*cargs, **cparams)
+city_service_app  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+city_service_app  |   File "/usr/local/lib/python3.11/site-packages/sqlalchemy/engine/default.py", line 616, in connect
+city_service_app  |     return self.loaded_dbapi.connect(*cargs, **cparams)
+city_service_app  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+city_service_app  |   File "/usr/local/lib/python3.11/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 936, in connect
+city_service_app  |     await_only(creator_fn(*arg, **kw)),
+city_service_app  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+city_service_app  |   File "/usr/local/lib/python3.11/site-packages/sqlalchemy/util/_concurrency_py3k.py", line 125, in await_only
+city_service_app  |     return current.driver.switch(awaitable)  # type: ignore[no-any-return]
+city_service_app  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+city_service_app  |   File "/usr/local/lib/python3.11/site-packages/sqlalchemy/util/_concurrency_py3k.py", line 185, in greenlet_spawn
+city_service_app  |     value = await result
+city_service_app  |             ^^^^^^^^^^^^
+city_service_app  |   File "/usr/local/lib/python3.11/site-packages/asyncpg/connection.py", line 2329, in connect
+city_service_app  |     return await connect_utils._connect(
+city_service_app  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+city_service_app  |   File "/usr/local/lib/python3.11/site-packages/asyncpg/connect_utils.py", line 1017, in _connect
+city_service_app  |     raise last_error or exceptions.TargetServerAttributeNotMatched(
+city_service_app  |   File "/usr/local/lib/python3.11/site-packages/asyncpg/connect_utils.py", line 991, in _connect
+city_service_app  |     conn = await _connect_addr(
+city_service_app  |            ^^^^^^^^^^^^^^^^^^^^
+city_service_app  |   File "/usr/local/lib/python3.11/site-packages/asyncpg/connect_utils.py", line 828, in _connect_addr
+city_service_app  |     return await __connect_addr(params, True, *args)
+city_service_app  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+city_service_app  |   File "/usr/local/lib/python3.11/site-packages/asyncpg/connect_utils.py", line 873, in __connect_addr
+city_service_app  |     tr, pr = await connector
+city_service_app  |              ^^^^^^^^^^^^^^^
+city_service_app  |   File "/usr/local/lib/python3.11/site-packages/asyncpg/connect_utils.py", line 752, in _create_ssl_connection
+city_service_app  |     do_ssl_upgrade = await pr.on_data
+city_service_app  |                      ^^^^^^^^^^^^^^^^
+city_service_app  | ConnectionError: unexpected connection_lost() call
+city_service_app  | 
+city_service_app  | ERROR:    Application startup failed. Exiting.
