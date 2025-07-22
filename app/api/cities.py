@@ -1,195 +1,242 @@
-from typing import Optional, List
-from pydantic import BaseModel, field_validator
-from datetime import datetime
+import time
+import logging
+from typing import List
+from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
+from sqlalchemy import func
+
+from app.database import get_db
+from app.models import City
+from app.schemas import (
+    CityCreate, CityUpdate, CityResponse, CityCountryCodeResponse, 
+    CityListResponse, MetricsResponse, CacheMetrics, PerformanceMetrics
+)
+from app.cache import get_cache, CacheManager
+from app.kafka_logger import get_kafka_logger, KafkaLogger
+
+logger = logging.getLogger(__name__)
+
+router = APIRouter()
 
 
-class CityCreateRequest(BaseModel):
-    """Schema for creating or updating a city"""
-    name: str
-    country_code: str
+@router.post("/", response_model=CityResponse, status_code=201)
+async def create_or_update_city(
+    city_data: CityCreate,
+    db: AsyncSession = Depends(get_db),
+    cache: CacheManager = Depends(get_cache)
+):
+    """
+    Create a new city or update an existing one.
+    If the city exists, its country code is updated.
+    """
+    try:
+        # Check if city already exists (case-insensitive)
+        stmt = select(City).where(func.lower(City.name) == city_data.name.lower())
+        result = await db.execute(stmt)
+        existing_city = result.scalar_one_or_none()
 
-    @field_validator('name')
-    @classmethod
-    def validate_name(cls, v: str) -> str:
-        """Validate city name - remove extra spaces and ensure proper format"""
-        if not v or not v.strip():
-            raise ValueError('City name cannot be empty')
-
-        # Clean up the name: strip whitespace, title case
-        cleaned_name = v.strip().title()
-
-        # Ensure name contains only valid characters
-        if not all(c.isalpha() or c.isspace() or c in '-_' for c in cleaned_name):
-            raise ValueError('City name can only contain letters, spaces, hyphens, and underscores')
-
-        return cleaned_name
-
-    @field_validator('country_code')
-    @classmethod
-    def validate_country_code(cls, v: str) -> str:
-        """Validate country code format"""
-        if not v or not v.strip():
-            raise ValueError('Country code cannot be empty')
-
-        # Clean and normalize country code
-        cleaned_code = v.strip().upper()
-
-        # Basic validation - country codes are typically 2-3 characters
-        if len(cleaned_code) < 2 or len(cleaned_code) > 3:
-            raise ValueError('Country code must be 2-3 characters long')
-
-        # Ensure only alphabetic characters
-        if not cleaned_code.isalpha():
-            raise ValueError('Country code can only contain letters')
-
-        return cleaned_code
-
-
-# Aliases for backward compatibility with API endpoints
-CityCreate = CityCreateRequest
-CityUpdate = CityCreateRequest
+        if existing_city:
+            # Update existing city
+            existing_city.country_code = city_data.country_code
+            db.add(existing_city)
+            await db.commit()
+            await db.refresh(existing_city)
+            
+            # Invalidate cache for updated city
+            cache_key = f"city:{existing_city.name.lower()}"
+            await cache.delete(cache_key)
+            
+            logger.info(f"Updated city: {existing_city.name} -> {existing_city.country_code}")
+            return existing_city
+        else:
+            # Create new city
+            new_city = City(name=city_data.name, country_code=city_data.country_code)
+            db.add(new_city)
+            await db.commit()
+            await db.refresh(new_city)
+            
+            logger.info(f"Created new city: {new_city.name} -> {new_city.country_code}")
+            return new_city
+            
+    except Exception as e:
+        logger.error(f"Error creating/updating city {city_data.name}: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 
-class CityResponse(BaseModel):
-    """Schema for city response"""
-    id: int
-    name: str
-    country_code: str
-    created_at: datetime
-    updated_at: datetime
+@router.get("/{city_name}/country-code", response_model=CityCountryCodeResponse)
+async def get_city_country_code(
+    city_name: str,
+    db: AsyncSession = Depends(get_db),
+    cache: CacheManager = Depends(get_cache),
+    kafka: KafkaLogger = Depends(get_kafka_logger)
+):
+    """
+    Retrieve the country code for a given city.
+    
+    Implementation follows the specified caching strategy:
+    1. Search in Redis cache first
+    2. If not found, query PostgreSQL 
+    3. Update cache with result
+    4. Log all requests to Kafka with performance metrics
+    """
+    start_time = time.time()
+    cache_key = f"city:{city_name.lower()}"
+    
+    try:
+        # Step 1: Search in Redis cache
+        cached_value = await cache.get(cache_key)
+        if cached_value:
+            response_time = time.time() - start_time
+            kafka.log_request(city_name, response_time, cache_hit=True, status_code=200)
+            return CityCountryCodeResponse(country_code=cached_value)
 
-    class Config:
-        from_attributes = True
+        # Step 2: If not in cache, search in PostgreSQL
+        stmt = select(City).where(func.lower(City.name) == city_name.lower())
+        result = await db.execute(stmt)
+        db_city = result.scalar_one_or_none()
 
+        if not db_city:
+            response_time = time.time() - start_time
+            kafka.log_request(city_name, response_time, cache_hit=False, status_code=404)
+            raise HTTPException(status_code=404, detail=f"City '{city_name}' not found")
 
-class CityCountryCodeResponse(BaseModel):
-    """Schema for country code response"""
-    country_code: str
+        # Step 3: Update cache with result
+        await cache.set(cache_key, db_city.country_code)
+        
+        response_time = time.time() - start_time
+        kafka.log_request(city_name, response_time, cache_hit=False, status_code=200)
 
-
-class CityListResponse(BaseModel):
-    """Schema for paginated city list response"""
-    cities: List[CityResponse]
-    total: int
-    page: int
-    per_page: int
-    total_pages: int
-
-
-class CacheMetrics(BaseModel):
-    """Schema for cache metrics"""
-    current_size: int
-    max_size: int
-    hit_rate: float
-    total_hits: int
-    total_misses: int
-    total_requests: int
-
-
-class PerformanceMetrics(BaseModel):
-    """Schema for performance metrics"""
-    total_requests: int
-    cache_hits: int
-    cache_misses: int
-    cache_hit_percentage: float
-    uptime_seconds: float
-    kafka_healthy: bool
-
-
-class MetricsResponse(BaseModel):
-    """Schema for metrics response"""
-    cache_metrics: CacheMetrics
-    performance_metrics: PerformanceMetrics
-
-
-class HealthResponse(BaseModel):
-    """Schema for health check response"""
-    status: str
-    response_time_ms: float
-    dependencies: dict
+        return CityCountryCodeResponse(country_code=db_city.country_code)
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        response_time = time.time() - start_time
+        kafka.log_request(city_name, response_time, cache_hit=False, status_code=500)
+        logger.error(f"Error retrieving country code for {city_name}: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 
-class ErrorResponse(BaseModel):
-    """Schema for error responses"""
-    detail: str
-    error_type: Optional[str] = None
-    field_errors: Optional[dict] = None
+@router.get("/", response_model=CityListResponse)
+async def list_cities(
+    db: AsyncSession = Depends(get_db),
+    page: int = Query(1, ge=1, description="Page number"),
+    per_page: int = Query(10, ge=1, le=100, description="Items per page"),
+    search: str = Query(None, description="Search cities by name")
+):
+    """
+    Retrieve a paginated list of all cities with optional search.
+    """
+    try:
+        # Calculate offset
+        offset = (page - 1) * per_page
+        
+        # Build query with optional search
+        base_query = select(City)
+        count_query = select(func.count()).select_from(City)
+        
+        if search:
+            search_pattern = f"%{search.lower()}%"
+            base_query = base_query.where(func.lower(City.name).like(search_pattern))
+            count_query = count_query.where(func.lower(City.name).like(search_pattern))
+        
+        # Get total count
+        total_result = await db.execute(count_query)
+        total = total_result.scalar_one()
+        
+        # Get paginated cities
+        cities_query = base_query.offset(offset).limit(per_page).order_by(City.name)
+        cities_result = await db.execute(cities_query)
+        cities = cities_result.scalars().all()
+        
+        total_pages = (total + per_page - 1) // per_page
+        
+        return CityListResponse(
+            cities=cities,
+            total=total,
+            page=page,
+            per_page=per_page,
+            total_pages=total_pages
+        )
+        
+    except Exception as e:
+        logger.error(f"Error listing cities: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 
-class BulkCreateRequest(BaseModel):
-    """Schema for bulk city creation"""
-    cities: List[CityCreateRequest]
-
-    @field_validator('cities')
-    @classmethod
-    def validate_cities_list(cls, v: List[CityCreateRequest]) -> List[CityCreateRequest]:
-        """Validate the list of cities"""
-        if not v:
-            raise ValueError('Cities list cannot be empty')
-
-        if len(v) > 1000:
-            raise ValueError('Cannot process more than 1000 cities at once')
-
-        # Check for duplicate city names in the request
-        city_names = [city.name.lower() for city in v]
-        if len(city_names) != len(set(city_names)):
-            raise ValueError('Duplicate city names found in request')
-
-        return v
-
-
-class BulkCreateResponse(BaseModel):
-    """Schema for bulk creation response"""
-    created: int
-    updated: int
-    errors: List[dict]
-    total_processed: int
-
-
-class SearchRequest(BaseModel):
-    """Schema for search request"""
-    search: Optional[str] = None
-    country_code: Optional[str] = None
-    page: int = 1
-    per_page: int = 10
-
-    @field_validator('page')
-    @classmethod
-    def validate_page(cls, v: int) -> int:
-        """Validate page number"""
-        if v < 1:
-            raise ValueError('Page number must be greater than 0')
-        return v
-
-    @field_validator('per_page')
-    @classmethod
-    def validate_per_page(cls, v: int) -> int:
-        """Validate per_page parameter"""
-        if v < 1:
-            raise ValueError('Per page value must be greater than 0')
-        if v > 100:
-            raise ValueError('Per page value cannot exceed 100')
-        return v
-
-    @field_validator('search')
-    @classmethod
-    def validate_search(cls, v: Optional[str]) -> Optional[str]:
-        """Validate search term"""
-        if v is not None:
-            v = v.strip()
-            if len(v) < 2:
-                raise ValueError('Search term must be at least 2 characters long')
-            if len(v) > 50:
-                raise ValueError('Search term cannot exceed 50 characters')
-        return v
+@router.get("/metrics", response_model=MetricsResponse)
+async def get_metrics(
+    cache: CacheManager = Depends(get_cache),
+    kafka: KafkaLogger = Depends(get_kafka_logger)
+):
+    """
+    Get performance metrics including cache statistics and Kafka logging stats.
+    """
+    try:
+        # Get cache statistics
+        cache_stats = cache.get_stats()
+        cache_metrics = CacheMetrics(
+            current_size=cache_stats["current_size"],
+            max_size=cache_stats["max_size"],
+            hit_rate=cache_stats["hit_rate"],
+            total_hits=cache_stats["total_hits"],
+            total_misses=cache_stats["total_misses"],
+            total_requests=cache_stats["total_requests"]
+        )
+        
+        # Get Kafka performance statistics
+        kafka_stats = kafka.get_stats()
+        performance_metrics = PerformanceMetrics(
+            total_requests=kafka_stats["total_requests"],
+            cache_hits=kafka_stats["cache_hits"],
+            cache_misses=kafka_stats["cache_misses"],
+            cache_hit_percentage=kafka_stats["cache_hit_percentage"],
+            uptime_seconds=kafka_stats["uptime_seconds"],
+            kafka_healthy=kafka_stats["kafka_healthy"]
+        )
+        
+        return MetricsResponse(
+            cache_metrics=cache_metrics,
+            performance_metrics=performance_metrics
+        )
+        
+    except Exception as e:
+        logger.error(f"Error getting metrics: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 
-class CSVImportResponse(BaseModel):
-    """Schema for CSV import response"""
-    total_rows: int
-    processed_rows: int
-    created_cities: int
-    updated_cities: int
-    skipped_rows: int
-    errors: List[dict]
-    processing_time_seconds: float
+@router.delete("/{city_name}")
+async def delete_city(
+    city_name: str,
+    db: AsyncSession = Depends(get_db),
+    cache: CacheManager = Depends(get_cache)
+):
+    """
+    Delete a city from the database and cache.
+    """
+    try:
+        # Find city in database
+        stmt = select(City).where(func.lower(City.name) == city_name.lower())
+        result = await db.execute(stmt)
+        city = result.scalar_one_or_none()
+        
+        if not city:
+            raise HTTPException(status_code=404, detail=f"City '{city_name}' not found")
+        
+        # Delete from database
+        await db.delete(city)
+        await db.commit()
+        
+        # Delete from cache
+        cache_key = f"city:{city_name.lower()}"
+        await cache.delete(cache_key)
+        
+        logger.info(f"Deleted city: {city.name}")
+        return {"message": f"City '{city.name}' deleted successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error deleting city {city_name}: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
