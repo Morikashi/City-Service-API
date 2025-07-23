@@ -1,144 +1,80 @@
-WARNING:__main__:Error processing city Lahore: This Session's transaction has been rolled back due to a previous exception during flush. To begin a new transaction with this Session, first issue Session.rollback(). Original exception was: (raised as a result of Query-invoked autoflush; consider using a session.no_autoflush block if this flush is occurring prematurely)
-(sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "uq_city_name"
-DETAIL:  Key (name)=(İzmir) already exists.
-[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
-[parameters: ('İzmir', 'CA')]
-(Background on this error at: https://sqlalche.me/e/20/gkpj) (Background on this error at: https://sqlalche.me/e/20/7s2a)
-WARNING:__main__:Error processing city Chennai: This Session's transaction has been rolled back due to a previous exception during flush. To begin a new transaction with this Session, first issue Session.rollback(). Original exception was: (raised as a result of Query-invoked autoflush; consider using a session.no_autoflush block if this flush is occurring prematurely)
-(sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "uq_city_name"
-DETAIL:  Key (name)=(İzmir) already exists.
-[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
-[parameters: ('İzmir', 'CA')]
-(Background on this error at: https://sqlalche.me/e/20/gkpj) (Background on this error at: https://sqlalche.me/e/20/7s2a)
-WARNING:__main__:Error processing city Gaborone: This Session's transaction has been rolled back due to a previous exception during flush. To begin a new transaction with this Session, first issue Session.rollback(). Original exception was: (raised as a result of Query-invoked autoflush; consider using a session.no_autoflush block if this flush is occurring prematurely)
-(sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "uq_city_name"
-DETAIL:  Key (name)=(İzmir) already exists.
-[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
-[parameters: ('İzmir', 'CA')]
-(Background on this error at: https://sqlalche.me/e/20/gkpj) (Background on this error at: https://sqlalche.me/e/20/7s2a)
-WARNING:__main__:Error processing city Banjul: This Session's transaction has been rolled back due to a previous exception during flush. To begin a new transaction with this Session, first issue Session.rollback(). Original exception was: (raised as a result of Query-invoked autoflush; consider using a session.no_autoflush block if this flush is occurring prematurely)
-(sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "uq_city_name"
-DETAIL:  Key (name)=(İzmir) already exists.
-[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
-[parameters: ('İzmir', 'CA')]
-(Background on this error at: https://sqlalche.me/e/20/gkpj) (Background on this error at: https://sqlalche.me/e/20/7s2a)
-WARNING:__main__:Error processing city Dushanbe: This Session's transaction has been rolled back due to a previous exception during flush. To begin a new transaction with this Session, first issue Session.rollback(). Original exception was: (raised as a result of Query-invoked autoflush; consider using a session.no_autoflush block if this flush is occurring prematurely)
-(sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "uq_city_name"
-DETAIL:  Key (name)=(İzmir) already exists.
-[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
-[parameters: ('İzmir', 'CA')]
-(Background on this error at: https://sqlalche.me/e/20/gkpj) (Background on this error at: https://sqlalche.me/e/20/7s2a)
-WARNING:__main__:Error processing city Auckland: This Session's transaction has been rolled back due to a previous exception during flush. To begin a new transaction with this Session, first issue Session.rollback(). Original exception was: (raised as a result of Query-invoked autoflush; consider using a session.no_autoflush block if this flush is occurring prematurely)
-(sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "uq_city_name"
-DETAIL:  Key (name)=(İzmir) already exists.
-[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
-[parameters: ('İzmir', 'CA')]
-(Background on this error at: https://sqlalche.me/e/20/gkpj) (Background on this error at: https://sqlalche.me/e/20/7s2a)
-WARNING:__main__:Error processing city Nakhon Ratchasima: This Session's transaction has been rolled back due to a previous exception during flush. To begin a new transaction with this Session, first issue Session.rollback(). Original exception was: (raised as a result of Query-invoked autoflush; consider using a session.no_autoflush block if this flush is occurring prematurely)
-(sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "uq_city_name"
-DETAIL:  Key (name)=(İzmir) already exists.
-[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
-[parameters: ('İzmir', 'CA')]
-(Background on this error at: https://sqlalche.me/e/20/gkpj) (Background on this error at: https://sqlalche.me/e/20/7s2a)
-WARNING:__main__:Error processing city Saint-Denis: This Session's transaction has been rolled back due to a previous exception during flush. To begin a new transaction with this Session, first issue Session.rollback(). Original exception was: (raised as a result of Query-invoked autoflush; consider using a session.no_autoflush block if this flush is occurring prematurely)
-(sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "uq_city_name"
-DETAIL:  Key (name)=(İzmir) already exists.
-[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
-[parameters: ('İzmir', 'CA')]
-(Background on this error at: https://sqlalche.me/e/20/gkpj) (Background on this error at: https://sqlalche.me/e/20/7s2a)
-WARNING:__main__:Error processing city Maracaibo: This Session's transaction has been rolled back due to a previous exception during flush. To begin a new transaction with this Session, first issue Session.rollback(). Original exception was: (raised as a result of Query-invoked autoflush; consider using a session.no_autoflush block if this flush is occurring prematurely)
-(sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "uq_city_name"
-DETAIL:  Key (name)=(İzmir) already exists.
-[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
-[parameters: ('İzmir', 'CA')]
-(Background on this error at: https://sqlalche.me/e/20/gkpj) (Background on this error at: https://sqlalche.me/e/20/7s2a)
-WARNING:__main__:Error processing city Linz: This Session's transaction has been rolled back due to a previous exception during flush. To begin a new transaction with this Session, first issue Session.rollback(). Original exception was: (raised as a result of Query-invoked autoflush; consider using a session.no_autoflush block if this flush is occurring prematurely)
-(sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "uq_city_name"
-DETAIL:  Key (name)=(İzmir) already exists.
-[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
-[parameters: ('İzmir', 'CA')]
-(Background on this error at: https://sqlalche.me/e/20/gkpj) (Background on this error at: https://sqlalche.me/e/20/7s2a)
-WARNING:__main__:Error processing city Hanga Roa: This Session's transaction has been rolled back due to a previous exception during flush. To begin a new transaction with this Session, first issue Session.rollback(). Original exception was: (raised as a result of Query-invoked autoflush; consider using a session.no_autoflush block if this flush is occurring prematurely)
-(sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "uq_city_name"
-DETAIL:  Key (name)=(İzmir) already exists.
-[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
-[parameters: ('İzmir', 'CA')]
-(Background on this error at: https://sqlalche.me/e/20/gkpj) (Background on this error at: https://sqlalche.me/e/20/7s2a)
-WARNING:__main__:Error processing city Makati City: This Session's transaction has been rolled back due to a previous exception during flush. To begin a new transaction with this Session, first issue Session.rollback(). Original exception was: (raised as a result of Query-invoked autoflush; consider using a session.no_autoflush block if this flush is occurring prematurely)
-(sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "uq_city_name"
-DETAIL:  Key (name)=(İzmir) already exists.
-[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
-[parameters: ('İzmir', 'CA')]
-(Background on this error at: https://sqlalche.me/e/20/gkpj) (Background on this error at: https://sqlalche.me/e/20/7s2a)
-WARNING:__main__:Error processing city Rockhampton: This Session's transaction has been rolled back due to a previous exception during flush. To begin a new transaction with this Session, first issue Session.rollback(). Original exception was: (raised as a result of Query-invoked autoflush; consider using a session.no_autoflush block if this flush is occurring prematurely)
-(sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "uq_city_name"
-DETAIL:  Key (name)=(İzmir) already exists.
-[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
-[parameters: ('İzmir', 'CA')]
-(Background on this error at: https://sqlalche.me/e/20/gkpj) (Background on this error at: https://sqlalche.me/e/20/7s2a)
-WARNING:__main__:Error processing city Phoenix: This Session's transaction has been rolled back due to a previous exception during flush. To begin a new transaction with this Session, first issue Session.rollback(). Original exception was: (raised as a result of Query-invoked autoflush; consider using a session.no_autoflush block if this flush is occurring prematurely)
-(sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "uq_city_name"
-DETAIL:  Key (name)=(İzmir) already exists.
-[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
-[parameters: ('İzmir', 'CA')]
-(Background on this error at: https://sqlalche.me/e/20/gkpj) (Background on this error at: https://sqlalche.me/e/20/7s2a)
-WARNING:__main__:Error processing city Vancouver: This Session's transaction has been rolled back due to a previous exception during flush. To begin a new transaction with this Session, first issue Session.rollback(). Original exception was: (raised as a result of Query-invoked autoflush; consider using a session.no_autoflush block if this flush is occurring prematurely)
-(sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "uq_city_name"
-DETAIL:  Key (name)=(İzmir) already exists.
-[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
-[parameters: ('İzmir', 'CA')]
-(Background on this error at: https://sqlalche.me/e/20/gkpj) (Background on this error at: https://sqlalche.me/e/20/7s2a)
-WARNING:__main__:Error processing city Iloilo City: This Session's transaction has been rolled back due to a previous exception during flush. To begin a new transaction with this Session, first issue Session.rollback(). Original exception was: (raised as a result of Query-invoked autoflush; consider using a session.no_autoflush block if this flush is occurring prematurely)
-(sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "uq_city_name"
-DETAIL:  Key (name)=(İzmir) already exists.
-[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
-[parameters: ('İzmir', 'CA')]
-(Background on this error at: https://sqlalche.me/e/20/gkpj) (Background on this error at: https://sqlalche.me/e/20/7s2a)
-WARNING:__main__:Error processing city Baku: This Session's transaction has been rolled back due to a previous exception during flush. To begin a new transaction with this Session, first issue Session.rollback(). Original exception was: (raised as a result of Query-invoked autoflush; consider using a session.no_autoflush block if this flush is occurring prematurely)
-(sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "uq_city_name"
-DETAIL:  Key (name)=(İzmir) already exists.
-[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
-[parameters: ('İzmir', 'CA')]
-(Background on this error at: https://sqlalche.me/e/20/gkpj) (Background on this error at: https://sqlalche.me/e/20/7s2a)
-WARNING:__main__:Error processing city Wonsan: This Session's transaction has been rolled back due to a previous exception during flush. To begin a new transaction with this Session, first issue Session.rollback(). Original exception was: (raised as a result of Query-invoked autoflush; consider using a session.no_autoflush block if this flush is occurring prematurely)
-(sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "uq_city_name"
-DETAIL:  Key (name)=(İzmir) already exists.
-[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
-[parameters: ('İzmir', 'CA')]
-(Background on this error at: https://sqlalche.me/e/20/gkpj) (Background on this error at: https://sqlalche.me/e/20/7s2a)
-WARNING:__main__:Error processing city Managua: This Session's transaction has been rolled back due to a previous exception during flush. To begin a new transaction with this Session, first issue Session.rollback(). Original exception was: (raised as a result of Query-invoked autoflush; consider using a session.no_autoflush block if this flush is occurring prematurely)
-(sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "uq_city_name"
-DETAIL:  Key (name)=(İzmir) already exists.
-[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
-[parameters: ('İzmir', 'CA')]
-(Background on this error at: https://sqlalche.me/e/20/gkpj) (Background on this error at: https://sqlalche.me/e/20/7s2a)
-WARNING:__main__:Error processing city Fukuoka: This Session's transaction has been rolled back due to a previous exception during flush. To begin a new transaction with this Session, first issue Session.rollback(). Original exception was: (raised as a result of Query-invoked autoflush; consider using a session.no_autoflush block if this flush is occurring prematurely)
-(sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "uq_city_name"
-DETAIL:  Key (name)=(İzmir) already exists.
-[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
-[parameters: ('İzmir', 'CA')]
-(Background on this error at: https://sqlalche.me/e/20/gkpj) (Background on this error at: https://sqlalche.me/e/20/7s2a)
-ERROR:__main__:Batch processing error: This Session's transaction has been rolled back due to a previous exception during flush. To begin a new transaction with this Session, first issue Session.rollback(). Original exception was: (raised as a result of Query-invoked autoflush; consider using a session.no_autoflush block if this flush is occurring prematurely)
-(sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "uq_city_name"
-DETAIL:  Key (name)=(İzmir) already exists.
-[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
-[parameters: ('İzmir', 'CA')]
-(Background on this error at: https://sqlalche.me/e/20/gkpj) (Background on this error at: https://sqlalche.me/e/20/7s2a)
-INFO:__main__:🎉 CSV data loading completed!
-INFO:__main__:📊 Final Statistics:
-INFO:__main__:   - Total rows in CSV: 10000
-INFO:__main__:   - Successfully processed: 9961
-INFO:__main__:   - Cities created: 652
-INFO:__main__:   - Cities updated: 2339
-INFO:__main__:   - Rows skipped: 39
-INFO:__main__:   - Processing time: 4.16s
-WARNING:__main__:⚠️  46 errors occurred during processing
-WARNING:__main__:   - Showing first 5 errors:
-WARNING:__main__:   - Row 37: Row validation error: Country code is empty
-WARNING:__main__:   - Row 1010: Row validation error: Country code is empty
-WARNING:__main__:   - Row 1084: Row validation error: Country code is empty
-WARNING:__main__:   - Row 1086: Row validation error: Country code is empty
-WARNING:__main__:   - Row 1087: Row validation error: Country code is empty
-WARNING:__main__:   - ... and 41 more
-WARNING:__main__:⚠️  Completed with errors
-[ERROR] Data loading script failed. Please check the output above.
+2025-07-23 13:02:15,076 - WARNING -    - Row 6: Praia - Unexpected error: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.UndefinedTableError'>: relation "cities" does not exist
+[SQL: SELECT cities.id, cities.name, cities.country_code, cities.created_at, cities.updated_at 
+FROM cities 
+WHERE lower(cities.name) = $1::VARCHAR]
+[parameters: ('praia',)]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-07-23 13:02:15,077 - WARNING -    - Row 7: Enugu - Unexpected error: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.UndefinedTableError'>: relation "cities" does not exist
+[SQL: SELECT cities.id, cities.name, cities.country_code, cities.created_at, cities.updated_at 
+FROM cities 
+WHERE lower(cities.name) = $1::VARCHAR]
+[parameters: ('enugu',)]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-07-23 13:02:15,077 - WARNING -    - Row 8: Boston - Unexpected error: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.UndefinedTableError'>: relation "cities" does not exist
+[SQL: SELECT cities.id, cities.name, cities.country_code, cities.created_at, cities.updated_at 
+FROM cities 
+WHERE lower(cities.name) = $1::VARCHAR]
+[parameters: ('boston',)]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-07-23 13:02:15,077 - WARNING -    - Row 9: Horta (Azores) - Unexpected error: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.UndefinedTableError'>: relation "cities" does not exist
+[SQL: SELECT cities.id, cities.name, cities.country_code, cities.created_at, cities.updated_at 
+FROM cities 
+WHERE lower(cities.name) = $1::VARCHAR]
+[parameters: ('horta (azores)',)]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-07-23 13:02:15,077 - WARNING -    - Row 10: Cali - Unexpected error: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.UndefinedTableError'>: relation "cities" does not exist
+[SQL: SELECT cities.id, cities.name, cities.country_code, cities.created_at, cities.updated_at 
+FROM cities 
+WHERE lower(cities.name) = $1::VARCHAR]
+[parameters: ('cali',)]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-07-23 13:02:15,077 - WARNING -    - ... and 9990 more errors
+2025-07-23 13:02:15,077 - WARNING - ⚠️  Data loading completed with errors
+[INFO] Data loaded successfully ✓
+[INFO] Step 6: Waiting for the City Service API to be healthy...
+..............................[ERROR] The API service did not become healthy in 60 seconds. Aborting.
+[ERROR] Tip: Check the application logs with 'docker-compose logs app' for details.
+(city-service-api) mortezakashani@Mortezas-MacBook-Pro City-Service-API % docker-compose logs app
+city_service_app  | INFO:     Will watch for changes in these directories: ['/app']
+city_service_app  | INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+city_service_app  | INFO:     Started reloader process [1] using WatchFiles
+city_service_app  | Process SpawnProcess-1:
+city_service_app  | Traceback (most recent call last):
+city_service_app  |   File "/usr/local/lib/python3.11/multiprocessing/process.py", line 314, in _bootstrap
+city_service_app  |     self.run()
+city_service_app  |   File "/usr/local/lib/python3.11/multiprocessing/process.py", line 108, in run
+city_service_app  |     self._target(*self._args, **self._kwargs)
+city_service_app  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/_subprocess.py", line 76, in subprocess_started
+city_service_app  |     target(sockets=sockets)
+city_service_app  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 61, in run
+city_service_app  |     return asyncio.run(self.serve(sockets=sockets))
+city_service_app  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+city_service_app  |   File "/usr/local/lib/python3.11/asyncio/runners.py", line 190, in run
+city_service_app  |     return runner.run(main)
+city_service_app  |            ^^^^^^^^^^^^^^^^
+city_service_app  |   File "/usr/local/lib/python3.11/asyncio/runners.py", line 118, in run
+city_service_app  |     return self._loop.run_until_complete(task)
+city_service_app  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+city_service_app  |   File "uvloop/loop.pyx", line 1518, in uvloop.loop.Loop.run_until_complete
+city_service_app  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 68, in serve
+city_service_app  |     config.load()
+city_service_app  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/config.py", line 467, in load
+city_service_app  |     self.loaded_app = import_from_string(self.app)
+city_service_app  |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+city_service_app  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/importer.py", line 21, in import_from_string
+city_service_app  |     module = importlib.import_module(module_str)
+city_service_app  |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+city_service_app  |   File "/usr/local/lib/python3.11/importlib/__init__.py", line 126, in import_module
+city_service_app  |     return _bootstrap._gcd_import(name[level:], package, level)
+city_service_app  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+city_service_app  |   File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+city_service_app  |   File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+city_service_app  |   File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
+city_service_app  |   File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+city_service_app  |   File "<frozen importlib._bootstrap_external>", line 940, in exec_module
+city_service_app  |   File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+city_service_app  |   File "/app/app/main.py", line 21, in <module>
+city_service_app  |     from app.api.cities import router as cities_router
+city_service_app  |   File "/app/app/api/cities.py", line 15, in <module>
+city_service_app  |     from app.schemas import (
+city_service_app  | ImportError: cannot import name 'BulkCityCreate' from 'app.schemas' (/app/app/schemas.py)
