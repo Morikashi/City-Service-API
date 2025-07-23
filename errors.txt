@@ -1,11 +1,163 @@
-city_service_app  | INFO:     Application startup complete.
-city_service_app  | 2025-07-23 10:58:37 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
-city_service_app  | 2025-07-23 10:58:37,482 INFO sqlalchemy.engine.Engine BEGIN (implicit)
-city_service_app  | 2025-07-23 10:58:37,483 INFO sqlalchemy.engine.Engine SELECT 1
-city_service_app  | 2025-07-23 10:58:37 - sqlalchemy.engine.Engine - INFO - SELECT 1
-city_service_app  | 2025-07-23 10:58:37,483 INFO sqlalchemy.engine.Engine [generated in 0.00016s] ()
-city_service_app  | 2025-07-23 10:58:37 - sqlalchemy.engine.Engine - INFO - [generated in 0.00016s] ()
-city_service_app  | 2025-07-23 10:58:37 - sqlalchemy.engine.Engine - INFO - ROLLBACK
-city_service_app  | 2025-07-23 10:58:37,484 INFO sqlalchemy.engine.Engine ROLLBACK
-city_service_app  | 2025-07-23 10:58:37 - app.database - ERROR - ❌ Database health check failed: A transaction is already begun on this Session.
-city_service_app  | 2025-07-23 10:58:37 - app.main - INFO - 🌐 GET /health - Status: 503 - Time: 13.66ms - ID: 1753268317480--3920057472538299566
+# app/database.py
+
+import asyncio
+import logging
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, AsyncEngine
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy import text
+from contextlib import asynccontextmanager
+from typing import AsyncGenerator
+
+from app.config import settings
+from app.models import Base
+
+logger = logging.getLogger(__name__)
+
+
+class DatabaseManager:
+    def __init__(self):
+        self.engine: AsyncEngine = None
+        self.session_factory: sessionmaker = None
+
+    async def initialize(self):
+        """Initialize database connection with retries for robustness."""
+        max_retries = 5
+        retry_delay = 5  # seconds
+
+        for attempt in range(max_retries):
+            try:
+                logger.info(f"Database connection attempt {attempt + 1}/{max_retries}...")
+                
+                self.engine = create_async_engine(
+                    settings.database_url,
+                    echo=settings.debug,
+                    pool_pre_ping=True,
+                    pool_size=10,
+                    max_overflow=20,
+                    pool_recycle=3600
+                )
+
+                # Create session factory
+                self.session_factory = sessionmaker(
+                    bind=self.engine,
+                    class_=AsyncSession,
+                    expire_on_commit=False
+                )
+
+                # Test connection and create tables
+                async with self.engine.begin() as conn:
+                    await conn.run_sync(Base.metadata.create_all)
+                
+                logger.info("✅ Database initialized successfully.")
+                return  # Exit the function on success
+
+            except Exception as e:
+                logger.warning(f"Database connection attempt {attempt + 1} failed: {e}")
+                if self.engine:
+                    await self.engine.dispose()
+                if attempt + 1 == max_retries:
+                    logger.error("❌ All database connection attempts failed.")
+                    raise
+                logger.info(f"Retrying in {retry_delay} seconds...")
+                await asyncio.sleep(retry_delay)
+
+    async def close(self):
+        """Close database connections."""
+        if self.engine:
+            await self.engine.dispose()
+            logger.info("✅ Database connections closed.")
+
+    async def health_check(self) -> bool:
+        """
+        Simple database health check without manual transaction management.
+        
+        This method relies on SQLAlchemy's automatic transaction handling
+        to avoid the "transaction already begun" error.
+        """
+        if not self.engine or not self.session_factory:
+            logger.error("❌ Database not initialized")
+            return False
+        
+        try:
+            # Simple approach: let SQLAlchemy handle transactions automatically
+            async with self.session_factory() as session:
+                # Execute a simple query - SQLAlchemy will handle the transaction
+                result = await session.execute(text("SELECT 1"))
+                success = result.scalar_one() == 1
+                logger.debug("✅ Database health check passed" if success else "❌ Database health check failed")
+                return success
+                
+        except Exception as e:
+            logger.error(f"❌ Database health check failed: {e}")
+            return False
+
+    @asynccontextmanager
+    async def get_session(self) -> AsyncGenerator[AsyncSession, None]:
+        """Get database session with proper cleanup."""
+        if not self.session_factory:
+            raise RuntimeError("Database not initialized - call initialize() first")
+
+        async with self.session_factory() as session:
+            try:
+                yield session
+                await session.commit()
+            except Exception as e:
+                await session.rollback()
+                logger.error(f"❌ Database session error: {e}", exc_info=True)
+                raise
+            finally:
+                await session.close()
+
+
+# Global database manager instance
+db_manager = DatabaseManager()
+
+
+async def get_db() -> AsyncGenerator[AsyncSession, None]:
+    """Dependency for getting database session."""
+    async with db_manager.get_session() as session:
+        yield session
+
+
+async def init_db():
+    """Initialize database."""
+    await db_manager.initialize()
+
+
+async def close_db():
+    """Close database."""
+    await db_manager.close()
+
+
+async def check_database_health():
+    """
+    Comprehensive database health check with detailed status information.
+    """
+    start_time = asyncio.get_event_loop().time()
+    
+    try:
+        is_healthy = await db_manager.health_check()
+        response_time = (asyncio.get_event_loop().time() - start_time) * 1000
+        
+        return {
+            "status": "healthy" if is_healthy else "unhealthy",
+            "response_time_ms": round(response_time, 2),
+            "details": {
+                "engine_initialized": db_manager.engine is not None,
+                "session_factory_initialized": db_manager.session_factory is not None,
+                "connection_test": "passed" if is_healthy else "failed"
+            }
+        }
+    except Exception as e:
+        response_time = (asyncio.get_event_loop().time() - start_time) * 1000
+        logger.error(f"❌ Database health check error: {e}", exc_info=True)
+        return {
+            "status": "unhealthy",
+            "response_time_ms": round(response_time, 2),
+            "error": str(e),
+            "details": {
+                "engine_initialized": db_manager.engine is not None,
+                "session_factory_initialized": db_manager.session_factory is not None,
+                "connection_test": "error"
+            }
+        }
