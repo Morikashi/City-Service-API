@@ -1,38 +1,33 @@
- 2025-07-23 08:57:14,358 INFO sqlalchemy.engine.Engine BEGIN (implicit)
-city_service_app  | 2025-07-23 08:57:14,358 INFO sqlalchemy.engine.Engine SELECT 1 as health_check
-city_service_app  | 2025-07-23 08:57:14,358 INFO sqlalchemy.engine.Engine [generated in 0.00006s] ()
-city_service_app  | 2025-07-23 08:57:14,359 INFO sqlalchemy.engine.Engine ROLLBACK
-city_service_app  | 2025-07-23 08:57:14 - app.cache - INFO - ✅ Redis connection established
-city_service_app  | 2025-07-23 08:57:14 - app.cache - INFO - 🚀 Cache manager initialized
-city_service_app  | 2025-07-23 08:57:14 - app.main - INFO - ✅ Cache system initialized successfully
-city_service_app  | 2025-07-23 08:57:14 - app.main - INFO - 📨 Initializing Kafka producer...
-city_service_app  | 2025-07-23 08:57:14 - app.kafka_logger - INFO - 🔌 Kafka connection attempt 1/5
-city_service_app  | 2025-07-23 08:57:14 - app.kafka_logger - ERROR - ❌ Kafka connection attempt 1 failed: AIOKafkaProducer.__init__() got an unexpected keyword argument 'buffer_memory'
-city_service_app  | 2025-07-23 08:57:14 - app.kafka_logger - INFO - ⏳ Retrying Kafka connection in 5 seconds...
-city_service_app  | 2025-07-23 08:57:19 - app.kafka_logger - INFO - 🔌 Kafka connection attempt 2/5
-city_service_app  | 2025-07-23 08:57:19 - app.kafka_logger - ERROR - ❌ Kafka connection attempt 2 failed: AIOKafkaProducer.__init__() got an unexpected keyword argument 'buffer_memory'
-city_service_app  | 2025-07-23 08:57:19 - app.kafka_logger - INFO - ⏳ Retrying Kafka connection in 5 seconds...
-city_service_app  | 2025-07-23 08:57:24 - app.kafka_logger - INFO - 🔌 Kafka connection attempt 3/5
-city_service_app  | 2025-07-23 08:57:24 - app.kafka_logger - ERROR - ❌ Kafka connection attempt 3 failed: AIOKafkaProducer.__init__() got an unexpected keyword argument 'buffer_memory'
-city_service_app  | 2025-07-23 08:57:24 - app.kafka_logger - INFO - ⏳ Retrying Kafka connection in 5 seconds...
-city_service_app  | 2025-07-23 08:57:29 - app.kafka_logger - INFO - 🔌 Kafka connection attempt 4/5
-city_service_app  | 2025-07-23 08:57:29 - app.kafka_logger - ERROR - ❌ Kafka connection attempt 4 failed: AIOKafkaProducer.__init__() got an unexpected keyword argument 'buffer_memory'
-city_service_app  | 2025-07-23 08:57:29 - app.kafka_logger - INFO - ⏳ Retrying Kafka connection in 5 seconds...
-city_service_app  | 2025-07-23 08:57:34 - app.kafka_logger - INFO - 🔌 Kafka connection attempt 5/5
-city_service_app  | 2025-07-23 08:57:34 - app.kafka_logger - ERROR - ❌ Kafka connection attempt 5 failed: AIOKafkaProducer.__init__() got an unexpected keyword argument 'buffer_memory'
-city_service_app  | 2025-07-23 08:57:34 - app.kafka_logger - ERROR - 💥 All Kafka connection attempts failed - operating in degraded mode
-city_service_app  | 2025-07-23 08:57:34 - app.main - INFO - ✅ Kafka producer initialized successfully
-city_service_app  | 2025-07-23 08:57:34 - app.main - INFO - 🎉 City Service API started successfully in 20.09s
-city_service_app  | 2025-07-23 08:57:34 - app.kafka_logger - WARNING - ⚠️  Kafka not connected - message queued
 city_service_app  | INFO:     Application startup complete.
-city_service_app  | 2025-07-23 08:57:35 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
-city_service_app  | 2025-07-23 08:57:35,273 INFO sqlalchemy.engine.Engine BEGIN (implicit)
-city_service_app  | 2025-07-23 08:57:35 - sqlalchemy.engine.Engine - INFO - SELECT 1
-city_service_app  | 2025-07-23 08:57:35 - sqlalchemy.engine.Engine - INFO - [generated in 0.00018s] ()
-city_service_app  | 2025-07-23 08:57:35,273 INFO sqlalchemy.engine.Engine SELECT 1
-city_service_app  | 2025-07-23 08:57:35,273 INFO sqlalchemy.engine.Engine [generated in 0.00018s] ()
-city_service_app  | 2025-07-23 08:57:35 - sqlalchemy.engine.Engine - INFO - ROLLBACK
-city_service_app  | 2025-07-23 08:57:35,276 INFO sqlalchemy.engine.Engine ROLLBACK
-city_service_app  | 2025-07-23 08:57:35 - app.database - ERROR - ❌ Database health check failed: A transaction is already begun on this Session.
-city_service_app  | 2025-07-23 08:57:35 - app.database - ERROR - ❌ Database health check error: 'QueuePool' object has no attribute 'invalidated'
-city_service_app  | 2025-07-23 08:57:35 - app.main - ERROR - ❌ Health check failed: 'QueuePool' object has no attribute 'invalidated'
+city_service_app  | 2025-07-23 10:43:31,813 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+city_service_app  | 2025-07-23 10:43:31 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+city_service_app  | 2025-07-23 10:43:31,813 INFO sqlalchemy.engine.Engine SELECT 1
+city_service_app  | 2025-07-23 10:43:31,814 INFO sqlalchemy.engine.Engine [generated in 0.00013s] ()
+city_service_app  | 2025-07-23 10:43:31 - sqlalchemy.engine.Engine - INFO - SELECT 1
+city_service_app  | 2025-07-23 10:43:31 - sqlalchemy.engine.Engine - INFO - [generated in 0.00013s] ()
+city_service_app  | 2025-07-23 10:43:31,814 INFO sqlalchemy.engine.Engine ROLLBACK
+city_service_app  | 2025-07-23 10:43:31 - sqlalchemy.engine.Engine - INFO - ROLLBACK
+city_service_app  | 2025-07-23 10:43:31 - app.database - ERROR - ❌ Database health check failed: A transaction is already begun on this Session.
+city_service_app  | 2025-07-23 10:43:31 - app.database - ERROR - ❌ Database health check error: 'QueuePool' object has no attribute 'invalidated'
+city_service_app  | 2025-07-23 10:43:31 - app.main - ERROR - ❌ Health check failed: 'QueuePool' object has no attribute 'invalidated'
+city_service_app  | Traceback (most recent call last):
+city_service_app  |   File "/app/app/database.py", line 305, in check_database_health
+city_service_app  |     connection_info = await db_manager.get_connection_info()
+city_service_app  |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+city_service_app  |   File "/app/app/database.py", line 234, in get_connection_info
+city_service_app  |     "invalid_connections": pool.invalidated(),
+city_service_app  |                            ^^^^^^^^^^^^^^^^
+city_service_app  | AttributeError: 'QueuePool' object has no attribute 'invalidated'
+city_service_app  | 
+city_service_app  | During handling of the above exception, another exception occurred:
+city_service_app  | 
+city_service_app  | Traceback (most recent call last):
+city_service_app  |   File "/app/app/main.py", line 451, in health_check
+city_service_app  |     db_health_info = await check_database_health()
+city_service_app  |                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+city_service_app  |   File "/app/app/database.py", line 329, in check_database_health
+city_service_app  |     "connection_info": await db_manager.get_connection_info(),
+city_service_app  |                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+city_service_app  |   File "/app/app/database.py", line 234, in get_connection_info
+city_service_app  |     "invalid_connections": pool.invalidated(),
+city_service_app  |                            ^^^^^^^^^^^^^^^^
