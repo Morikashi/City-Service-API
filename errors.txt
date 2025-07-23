@@ -1,202 +1,85 @@
-2025-07-23 13:51:34,356 - WARNING - Integrity error for city 'İzmir': (sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "ix_cities_name"
-DETAIL:  Key (name)=(İzmir) already exists.
-[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
-[parameters: ('İzmir', 'SA')]
-(Background on this error at: https://sqlalche.me/e/20/gkpj)
-2025-07-23 13:51:34,502 - INFO - 📊 Progress: 3000/10000 cities processed...
-2025-07-23 13:51:34,552 - WARNING - Integrity error for city 'İzmir': (sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "ix_cities_name"
-DETAIL:  Key (name)=(İzmir) already exists.
-[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
-[parameters: ('İzmir', 'SI')]
-(Background on this error at: https://sqlalche.me/e/20/gkpj)
-2025-07-23 13:51:34,636 - WARNING - Integrity error for city 'İzmir': (sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "ix_cities_name"
-DETAIL:  Key (name)=(İzmir) already exists.
-[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
-[parameters: ('İzmir', 'GY')]
-(Background on this error at: https://sqlalche.me/e/20/gkpj)
-2025-07-23 13:51:34,720 - WARNING - Integrity error for city 'İzmir': (sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "ix_cities_name"
-DETAIL:  Key (name)=(İzmir) already exists.
-[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
-[parameters: ('İzmir', 'NZ')]
-(Background on this error at: https://sqlalche.me/e/20/gkpj)
-2025-07-23 13:51:34,979 - INFO - 📊 Progress: 4000/10000 cities processed...
-2025-07-23 13:51:35,374 - WARNING - Integrity error for city 'İzmir': (sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "ix_cities_name"
-DETAIL:  Key (name)=(İzmir) already exists.
-[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
-[parameters: ('İzmir', 'YE')]
-(Background on this error at: https://sqlalche.me/e/20/gkpj)
-2025-07-23 13:51:35,453 - INFO - 📊 Progress: 5000/10000 cities processed...
-2025-07-23 13:51:35,458 - WARNING - Integrity error for city 'İzmir': (sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "ix_cities_name"
-DETAIL:  Key (name)=(İzmir) already exists.
-[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
-[parameters: ('İzmir', 'BT')]
-(Background on this error at: https://sqlalche.me/e/20/gkpj)
-2025-07-23 13:51:35,751 - WARNING - Integrity error for city 'İzmir': (sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "ix_cities_name"
-DETAIL:  Key (name)=(İzmir) already exists.
-[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
-[parameters: ('İzmir', 'GS')]
-(Background on this error at: https://sqlalche.me/e/20/gkpj)
-2025-07-23 13:51:35,935 - INFO - 📊 Progress: 6000/10000 cities processed...
-2025-07-23 13:51:36,049 - WARNING - Integrity error for city 'İzmir': (sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "ix_cities_name"
-DETAIL:  Key (name)=(İzmir) already exists.
-[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
-[parameters: ('İzmir', 'RE')]
-(Background on this error at: https://sqlalche.me/e/20/gkpj)
-2025-07-23 13:51:36,300 - WARNING - Integrity error for city 'İzmir': (sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "ix_cities_name"
-DETAIL:  Key (name)=(İzmir) already exists.
-[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
-[parameters: ('İzmir', 'GF')]
-(Background on this error at: https://sqlalche.me/e/20/gkpj)
-2025-07-23 13:51:36,405 - INFO - 📊 Progress: 7000/10000 cities processed...
-2025-07-23 13:51:36,563 - WARNING - Integrity error for city 'İzmir': (sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "ix_cities_name"
-DETAIL:  Key (name)=(İzmir) already exists.
-[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
-[parameters: ('İzmir', 'HN')]
-(Background on this error at: https://sqlalche.me/e/20/gkpj)
-2025-07-23 13:51:36,590 - WARNING - Integrity error for city 'İzmir': (sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "ix_cities_name"
-DETAIL:  Key (name)=(İzmir) already exists.
-[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
-[parameters: ('İzmir', 'BY')]
-(Background on this error at: https://sqlalche.me/e/20/gkpj)
-2025-07-23 13:51:36,640 - WARNING - Integrity error for city 'İzmir': (sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "ix_cities_name"
-DETAIL:  Key (name)=(İzmir) already exists.
-[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
-[parameters: ('İzmir', 'IT')]
-(Background on this error at: https://sqlalche.me/e/20/gkpj)
-2025-07-23 13:51:36,645 - WARNING - Integrity error for city 'İzmir': (sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "ix_cities_name"
-DETAIL:  Key (name)=(İzmir) already exists.
-[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
-[parameters: ('İzmir', 'PT')]
-(Background on this error at: https://sqlalche.me/e/20/gkpj)
-2025-07-23 13:51:36,722 - WARNING - Integrity error for city 'İzmir': (sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "ix_cities_name"
-DETAIL:  Key (name)=(İzmir) already exists.
-[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
-[parameters: ('İzmir', 'PH')]
-(Background on this error at: https://sqlalche.me/e/20/gkpj)
-2025-07-23 13:51:36,882 - INFO - 📊 Progress: 8000/10000 cities processed...
-2025-07-23 13:51:36,992 - WARNING - Integrity error for city 'İzmir': (sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "ix_cities_name"
-DETAIL:  Key (name)=(İzmir) already exists.
-[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
-[parameters: ('İzmir', 'KW')]
-(Background on this error at: https://sqlalche.me/e/20/gkpj)
-2025-07-23 13:51:37,007 - WARNING - Integrity error for city 'İzmir': (sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "ix_cities_name"
-DETAIL:  Key (name)=(İzmir) already exists.
-[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
-[parameters: ('İzmir', 'GT')]
-(Background on this error at: https://sqlalche.me/e/20/gkpj)
-2025-07-23 13:51:37,266 - WARNING - Integrity error for city 'İzmir': (sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "ix_cities_name"
-DETAIL:  Key (name)=(İzmir) already exists.
-[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
-[parameters: ('İzmir', 'BA')]
-(Background on this error at: https://sqlalche.me/e/20/gkpj)
-2025-07-23 13:51:37,355 - INFO - 📊 Progress: 9000/10000 cities processed...
-2025-07-23 13:51:37,576 - WARNING - Integrity error for city 'İzmir': (sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "ix_cities_name"
-DETAIL:  Key (name)=(İzmir) already exists.
-[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
-[parameters: ('İzmir', 'CA')]
-(Background on this error at: https://sqlalche.me/e/20/gkpj)
-2025-07-23 13:51:37,829 - INFO - 🎉 CSV data loading completed!
-2025-07-23 13:51:37,829 - INFO - 📊 Final Statistics:
-2025-07-23 13:51:37,829 - INFO -    - Total rows in CSV: 10000
-2025-07-23 13:51:37,829 - INFO -    - Successfully processed: 10000
-2025-07-23 13:51:37,829 - INFO -    - Cities created: 660
-2025-07-23 13:51:37,829 - INFO -    - Cities updated: 9275
-2025-07-23 13:51:37,829 - INFO -    - Rows skipped: 47
-2025-07-23 13:51:37,829 - INFO -    - Processing time: 4.90s
-2025-07-23 13:51:37,829 - WARNING - ⚠️  18 errors occurred during processing
-2025-07-23 13:51:37,829 - WARNING -    - Showing first 5 errors:
-2025-07-23 13:51:37,829 - WARNING -    - Row 2686: İzmir - Integrity error: (sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "ix_cities_name"
-DETAIL:  Key (name)=(İzmir) already exists.
-[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
-[parameters: ('İzmir', 'SA')]
-(Background on this error at: https://sqlalche.me/e/20/gkpj)
-2025-07-23 13:51:37,829 - WARNING -    - Row 3108: İzmir - Integrity error: (sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "ix_cities_name"
-DETAIL:  Key (name)=(İzmir) already exists.
-[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
-[parameters: ('İzmir', 'SI')]
-(Background on this error at: https://sqlalche.me/e/20/gkpj)
-2025-07-23 13:51:37,829 - WARNING -    - Row 3286: İzmir - Integrity error: (sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "ix_cities_name"
-DETAIL:  Key (name)=(İzmir) already exists.
-[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
-[parameters: ('İzmir', 'GY')]
-(Background on this error at: https://sqlalche.me/e/20/gkpj)
-2025-07-23 13:51:37,829 - WARNING -    - Row 3462: İzmir - Integrity error: (sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "ix_cities_name"
-DETAIL:  Key (name)=(İzmir) already exists.
-[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
-[parameters: ('İzmir', 'NZ')]
-(Background on this error at: https://sqlalche.me/e/20/gkpj)
-2025-07-23 13:51:37,829 - WARNING -    - Row 4833: İzmir - Integrity error: (sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "ix_cities_name"
-DETAIL:  Key (name)=(İzmir) already exists.
-[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
-[parameters: ('İzmir', 'YE')]
-(Background on this error at: https://sqlalche.me/e/20/gkpj)
-2025-07-23 13:51:37,829 - WARNING -    - ... and 13 more
-2025-07-23 13:51:37,829 - WARNING - ⚠️  Data loading completed with errors
-[INFO] ✓ CSV data loaded successfully
-[STEP] 🧪 Running comprehensive API tests...
-[INFO] Executing test suite inside container...
-⏳ Waiting 2 seconds for API to be ready...
+# scripts/load_csv_data.py
+import asyncio, csv, logging, time
+from pathlib import Path
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.future import select
+from sqlalchemy import func
+from sqlalchemy.exc import IntegrityError
 
-============================================================
- Starting City Service API Tests
-============================================================
+from app.config import settings
+from app.models import City
 
-============================================================
- Testing Health Endpoint
-============================================================
-✅ Health check passed - Status: healthy
-✅ Database is healthy
-✅ Redis is healthy
-✅ Kafka is healthy
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+)
+log = logging.getLogger(__name__)
 
-============================================================
- Testing CRUD Operations
-============================================================
-❌ Failed to create city Tokyo: 307
-❌ Failed to create city London: 307
-❌ Failed to create city New York: 307
-❌ Failed to create city Paris: 307
-❌ Failed to create city Berlin: 307
-❌ Failed to get country code for Tokyo: 404
-❌ Failed to get country code for London: 404
-❌ Failed to get country code for New York: 404
-❌ Failed to get country code for Paris: 404
-❌ Failed to get country code for Berlin: 404
-❌ Failed to list cities: 307
-❌ Failed to get metrics: 404
+CSV_FILE = Path(__file__).parent.parent / "country-code.csv"
+BATCH = 500
 
-============================================================
- Testing Cache Performance
-============================================================
-ℹ️  Testing cache miss performance...
-❌ Cache miss request failed: 404
-ℹ️  Testing cache hit performance...
-❌ Cache hit request failed: 404
-ℹ️  Cache performance difference: 21.6% (hit might be slower due to network variance)
-ℹ️  Cache miss time: 10.55ms
-ℹ️  Cache hit time: 13.45ms
 
-============================================================
- Testing Error Handling
-============================================================
-✅ 404 error handling works correctly
-❌ Expected 422, got 307
+async def process_single_city(session: AsyncSession, city: str, code: str) -> str:
+    stmt = select(City).where(func.lower(City.name) == city.lower())
+    existing = (await session.execute(stmt)).scalar_one_or_none()
+    if existing:
+        if existing.country_code != code:
+            existing.country_code = code
+            await session.commit()
+            return "updated"
+        return "skipped"
 
-============================================================
- Testing Concurrent Requests
-============================================================
-❌ Failed to get country code for Paris: request failed
-❌ Failed to get country code for London: request failed
-❌ Failed to get country code for Rome: request failed
-❌ Failed to get country code for Madrid: request failed
-❌ Failed to get country code for Berlin: request failed
-✅ Concurrent requests completed: 0/5
-ℹ️  Total time: 112.15ms
-ℹ️  Average time per request: 22.43ms
-❌ Failed to delete city Tokyo: 404
+    try:
+        session.add(City(name=city, country_code=code))
+        await session.commit()
+        return "created"
+    except IntegrityError as e:
+        await session.rollback()
+        log.warning("Integrity error for city '%s': %s", city, e)
+        return "error"
 
-============================================================
- Test Summary
-============================================================
-❌ Tests passed: 6/27 (22.2%)
-❌ Tests failed: 22
+
+async def load():
+    if not CSV_FILE.exists():
+        log.error("CSV file %s not found", CSV_FILE)
+        return
+
+    engine = create_async_engine(settings.database_url, echo=False, pool_pre_ping=True)
+    async_session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
+
+    created = updated = skipped = errors = 0
+    start = time.time()
+
+    with CSV_FILE.open(newline="", encoding="utf-8") as fh:
+        reader = csv.DictReader(fh)
+        rows = [r for r in reader]
+
+    async with async_session() as session:
+        for i, row in enumerate(rows, 1):
+            city, code = row["City"].strip(), row["Country Code"].strip()
+            status = await process_single_city(session, city, code)
+            if status == "created":
+                created += 1
+            elif status == "updated":
+                updated += 1
+            elif status == "skipped":
+                skipped += 1
+            else:
+                errors += 1
+
+            if i % 1000 == 0:
+                log.info("📊 Progress: %s/%s cities processed...", i, len(rows))
+
+    log.info("🎉 CSV data loading completed!")
+    log.info("📊 Final Statistics:")
+    log.info("   - Total rows in CSV: %s", len(rows))
+    log.info("   - Cities created   : %s", created)
+    log.info("   - Cities updated   : %s", updated)
+    log.info("   - Rows skipped     : %s", skipped)
+    log.info("   - Errors           : %s", errors)
+    log.info("   - Processing time  : %.2fs", time.time() - start)
+
+
+if __name__ == "__main__":
+    asyncio.run(load())
