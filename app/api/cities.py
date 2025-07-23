@@ -1,242 +1,210 @@
-import time
+# City Service API - Cities API Endpoints
+# CRUD operations with caching and performance logging
+
 import logging
+import time
 from typing import List
-from fastapi import APIRouter, Depends, HTTPException, Query
+
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from sqlalchemy import func
+from sqlalchemy import func, delete
 
 from app.database import get_db
 from app.models import City
 from app.schemas import (
-    CityCreate, CityUpdate, CityResponse, CityCountryCodeResponse, 
-    CityListResponse, MetricsResponse, CacheMetrics, PerformanceMetrics
+    CityCreate,
+    CityResponse,
+    CityCountryCodeResponse,
+    CityListResponse,
+    BulkCityCreate,
+    BulkOperationResponse,
+    SearchParams,
 )
-from app.cache import get_cache, CacheManager
+from app.cache import get_cache, CacheManager, generate_cache_key
 from app.kafka_logger import get_kafka_logger, KafkaLogger
 
+# Configure logger
 logger = logging.getLogger(__name__)
 
+# Create router
 router = APIRouter()
 
+# =============================================================================
+# HELPER FUNCTIONS
+# =============================================================================
 
-@router.post("/", response_model=CityResponse, status_code=201)
+async def _get_city_from_db(session: AsyncSession, city_name: str) -> City | None:
+    stmt = select(City).where(func.lower(City.name) == city_name.lower())
+    result = await session.execute(stmt)
+    return result.scalar_one_or_none()
+
+
+# =============================================================================
+# API ENDPOINTS
+# =============================================================================
+
+@router.post("/", response_model=CityResponse, status_code=status.HTTP_201_CREATED)
 async def create_or_update_city(
     city_data: CityCreate,
     db: AsyncSession = Depends(get_db),
     cache: CacheManager = Depends(get_cache)
 ):
-    """
-    Create a new city or update an existing one.
-    If the city exists, its country code is updated.
-    """
-    try:
-        # Check if city already exists (case-insensitive)
-        stmt = select(City).where(func.lower(City.name) == city_data.name.lower())
-        result = await db.execute(stmt)
-        existing_city = result.scalar_one_or_none()
+    """Create a new city or update an existing one."""
+    existing_city = await _get_city_from_db(db, city_data.name)
 
-        if existing_city:
-            # Update existing city
-            existing_city.country_code = city_data.country_code
-            db.add(existing_city)
-            await db.commit()
-            await db.refresh(existing_city)
-            
-            # Invalidate cache for updated city
-            cache_key = f"city:{existing_city.name.lower()}"
-            await cache.delete(cache_key)
-            
-            logger.info(f"Updated city: {existing_city.name} -> {existing_city.country_code}")
-            return existing_city
-        else:
-            # Create new city
-            new_city = City(name=city_data.name, country_code=city_data.country_code)
-            db.add(new_city)
-            await db.commit()
-            await db.refresh(new_city)
-            
-            logger.info(f"Created new city: {new_city.name} -> {new_city.country_code}")
-            return new_city
-            
-    except Exception as e:
-        logger.error(f"Error creating/updating city {city_data.name}: {e}")
-        raise HTTPException(status_code=500, detail="Internal server error")
+    if existing_city:
+        existing_city.country_code = city_data.country_code
+        db.add(existing_city)
+        await db.commit()
+        await db.refresh(existing_city)
+
+        # Invalidate cache
+        await cache.delete(generate_cache_key("city", existing_city.name))
+        return existing_city
+
+    new_city = City(name=city_data.name, country_code=city_data.country_code)
+    db.add(new_city)
+    await db.commit()
+    await db.refresh(new_city)
+    return new_city
 
 
 @router.get("/{city_name}/country-code", response_model=CityCountryCodeResponse)
-async def get_city_country_code(
+async def get_country_code(
     city_name: str,
     db: AsyncSession = Depends(get_db),
     cache: CacheManager = Depends(get_cache),
     kafka: KafkaLogger = Depends(get_kafka_logger)
 ):
-    """
-    Retrieve the country code for a given city.
-    
-    Implementation follows the specified caching strategy:
-    1. Search in Redis cache first
-    2. If not found, query PostgreSQL 
-    3. Update cache with result
-    4. Log all requests to Kafka with performance metrics
-    """
+    """Retrieve the country code for a given city, using cache with fallback."""
     start_time = time.time()
-    cache_key = f"city:{city_name.lower()}"
-    
-    try:
-        # Step 1: Search in Redis cache
-        cached_value = await cache.get(cache_key)
-        if cached_value:
-            response_time = time.time() - start_time
-            kafka.log_request(city_name, response_time, cache_hit=True, status_code=200)
-            return CityCountryCodeResponse(country_code=cached_value)
+    cache_key = generate_cache_key("city", city_name)
 
-        # Step 2: If not in cache, search in PostgreSQL
-        stmt = select(City).where(func.lower(City.name) == city_name.lower())
-        result = await db.execute(stmt)
-        db_city = result.scalar_one_or_none()
+    # Try cache first
+    cached_value = await cache.get(cache_key)
+    if cached_value:
+        kafka.log_request(city_name, time.time() - start_time, cache_hit=True, status_code=200)
+        return CityCountryCodeResponse(country_code=cached_value)
 
-        if not db_city:
-            response_time = time.time() - start_time
-            kafka.log_request(city_name, response_time, cache_hit=False, status_code=404)
-            raise HTTPException(status_code=404, detail=f"City '{city_name}' not found")
+    # Fallback to database
+    city = await _get_city_from_db(db, city_name)
+    if city is None:
+        kafka.log_request(city_name, time.time() - start_time, cache_hit=False, status_code=404)
+        raise HTTPException(status_code=404, detail="City not found")
 
-        # Step 3: Update cache with result
-        await cache.set(cache_key, db_city.country_code)
-        
-        response_time = time.time() - start_time
-        kafka.log_request(city_name, response_time, cache_hit=False, status_code=200)
-
-        return CityCountryCodeResponse(country_code=db_city.country_code)
-        
-    except HTTPException:
-        raise
-    except Exception as e:
-        response_time = time.time() - start_time
-        kafka.log_request(city_name, response_time, cache_hit=False, status_code=500)
-        logger.error(f"Error retrieving country code for {city_name}: {e}")
-        raise HTTPException(status_code=500, detail="Internal server error")
+    # Update cache
+    await cache.set(cache_key, city.country_code)
+    kafka.log_request(city_name, time.time() - start_time, cache_hit=False, status_code=200)
+    return CityCountryCodeResponse(country_code=city.country_code)
 
 
 @router.get("/", response_model=CityListResponse)
 async def list_cities(
-    db: AsyncSession = Depends(get_db),
-    page: int = Query(1, ge=1, description="Page number"),
-    per_page: int = Query(10, ge=1, le=100, description="Items per page"),
-    search: str = Query(None, description="Search cities by name")
+    params: SearchParams = Depends(),
+    db: AsyncSession = Depends(get_db)
 ):
-    """
-    Retrieve a paginated list of all cities with optional search.
-    """
-    try:
-        # Calculate offset
-        offset = (page - 1) * per_page
-        
-        # Build query with optional search
-        base_query = select(City)
-        count_query = select(func.count()).select_from(City)
-        
-        if search:
-            search_pattern = f"%{search.lower()}%"
-            base_query = base_query.where(func.lower(City.name).like(search_pattern))
-            count_query = count_query.where(func.lower(City.name).like(search_pattern))
-        
-        # Get total count
-        total_result = await db.execute(count_query)
-        total = total_result.scalar_one()
-        
-        # Get paginated cities
-        cities_query = base_query.offset(offset).limit(per_page).order_by(City.name)
-        cities_result = await db.execute(cities_query)
-        cities = cities_result.scalars().all()
-        
-        total_pages = (total + per_page - 1) // per_page
-        
-        return CityListResponse(
-            cities=cities,
-            total=total,
-            page=page,
-            per_page=per_page,
-            total_pages=total_pages
-        )
-        
-    except Exception as e:
-        logger.error(f"Error listing cities: {e}")
-        raise HTTPException(status_code=500, detail="Internal server error")
+    """List cities with pagination and optional search/filter."""
+    offset = (params.page - 1) * params.per_page
+
+    stmt = select(City)
+    count_stmt = select(func.count()).select_from(City)
+
+    # Apply search filter
+    if params.search:
+        search_filter = City.get_search_filter(params.search)
+        stmt = stmt.where(search_filter)
+        count_stmt = count_stmt.where(search_filter)
+
+    # Apply country filter
+    if params.country_code:
+        country_filter = City.get_country_filter(params.country_code)
+        stmt = stmt.where(country_filter)
+        count_stmt = count_stmt.where(country_filter)
+
+    # Execute count query
+    total = (await db.execute(count_stmt)).scalar_one()
+
+    # Execute paginated query
+    stmt = stmt.offset(offset).limit(params.per_page)
+    cities = (await db.execute(stmt)).scalars().all()
+
+    total_pages = (total + params.per_page - 1) // params.per_page
+
+    return {
+        "cities": cities,
+        "total": total,
+        "page": params.page,
+        "per_page": params.per_page,
+        "total_pages": total_pages,
+        "has_next": params.page < total_pages,
+        "has_prev": params.page > 1
+    }
 
 
-@router.get("/metrics", response_model=MetricsResponse)
-async def get_metrics(
-    cache: CacheManager = Depends(get_cache),
-    kafka: KafkaLogger = Depends(get_kafka_logger)
-):
-    """
-    Get performance metrics including cache statistics and Kafka logging stats.
-    """
-    try:
-        # Get cache statistics
-        cache_stats = cache.get_stats()
-        cache_metrics = CacheMetrics(
-            current_size=cache_stats["current_size"],
-            max_size=cache_stats["max_size"],
-            hit_rate=cache_stats["hit_rate"],
-            total_hits=cache_stats["total_hits"],
-            total_misses=cache_stats["total_misses"],
-            total_requests=cache_stats["total_requests"]
-        )
-        
-        # Get Kafka performance statistics
-        kafka_stats = kafka.get_stats()
-        performance_metrics = PerformanceMetrics(
-            total_requests=kafka_stats["total_requests"],
-            cache_hits=kafka_stats["cache_hits"],
-            cache_misses=kafka_stats["cache_misses"],
-            cache_hit_percentage=kafka_stats["cache_hit_percentage"],
-            uptime_seconds=kafka_stats["uptime_seconds"],
-            kafka_healthy=kafka_stats["kafka_healthy"]
-        )
-        
-        return MetricsResponse(
-            cache_metrics=cache_metrics,
-            performance_metrics=performance_metrics
-        )
-        
-    except Exception as e:
-        logger.error(f"Error getting metrics: {e}")
-        raise HTTPException(status_code=500, detail="Internal server error")
-
-
-@router.delete("/{city_name}")
+@router.delete("/{city_name}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_city(
     city_name: str,
     db: AsyncSession = Depends(get_db),
     cache: CacheManager = Depends(get_cache)
 ):
-    """
-    Delete a city from the database and cache.
-    """
-    try:
-        # Find city in database
-        stmt = select(City).where(func.lower(City.name) == city_name.lower())
-        result = await db.execute(stmt)
-        city = result.scalar_one_or_none()
-        
-        if not city:
-            raise HTTPException(status_code=404, detail=f"City '{city_name}' not found")
-        
-        # Delete from database
-        await db.delete(city)
-        await db.commit()
-        
-        # Delete from cache
-        cache_key = f"city:{city_name.lower()}"
-        await cache.delete(cache_key)
-        
-        logger.info(f"Deleted city: {city.name}")
-        return {"message": f"City '{city.name}' deleted successfully"}
-        
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Error deleting city {city_name}: {e}")
-        raise HTTPException(status_code=500, detail="Internal server error")
+    """Delete a city by name."""
+    stmt = delete(City).where(func.lower(City.name) == city_name.lower())
+    result = await db.execute(stmt)
+    await db.commit()
+
+    if result.rowcount == 0:
+        raise HTTPException(status_code=404, detail="City not found")
+
+    await cache.delete(generate_cache_key("city", city_name))
+    return None
+
+
+@router.post("/bulk", response_model=BulkOperationResponse)
+async def bulk_create_cities(
+    payload: BulkCityCreate,
+    db: AsyncSession = Depends(get_db),
+    cache: CacheManager = Depends(get_cache)
+):
+    """Bulk create or update cities from payload."""
+    start_time = time.time()
+    created, updated, errors = 0, 0, []
+
+    for city in payload.cities:
+        try:
+            existing = await _get_city_from_db(db, city.name)
+            if existing:
+                if payload.update_existing:
+                    existing.country_code = city.country_code
+                    db.add(existing)
+                    updated += 1
+                    await cache.delete(generate_cache_key("city", existing.name))
+            else:
+                db.add(City(name=city.name, country_code=city.country_code))
+                created += 1
+        except Exception as e:
+            errors.append({"city": city.name, "error": str(e)})
+            logger.error(f"Error processing city {city.name}: {e}")
+
+    await db.commit()
+
+    return {
+        "created": created,
+        "updated": updated,
+        "errors": errors,
+        "total_processed": created + updated + len(errors),
+        "processing_time_seconds": round(time.time() - start_time, 2)
+    }
+
+
+@router.get("/metrics", tags=["metrics"])
+async def get_metrics(
+    cache: CacheManager = Depends(get_cache),
+    kafka: KafkaLogger = Depends(get_kafka_logger)
+):
+    """Return cache and Kafka performance metrics."""
+    return {
+        "cache_metrics": cache.get_stats(),
+        "performance_metrics": kafka.get_metrics(),
+        "timestamp": datetime.utcnow()
+    }
