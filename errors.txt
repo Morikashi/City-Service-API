@@ -1,294 +1,202 @@
-#!/bin/bash
+2025-07-23 13:51:34,356 - WARNING - Integrity error for city 'İzmir': (sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "ix_cities_name"
+DETAIL:  Key (name)=(İzmir) already exists.
+[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
+[parameters: ('İzmir', 'SA')]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2025-07-23 13:51:34,502 - INFO - 📊 Progress: 3000/10000 cities processed...
+2025-07-23 13:51:34,552 - WARNING - Integrity error for city 'İzmir': (sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "ix_cities_name"
+DETAIL:  Key (name)=(İzmir) already exists.
+[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
+[parameters: ('İzmir', 'SI')]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2025-07-23 13:51:34,636 - WARNING - Integrity error for city 'İzmir': (sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "ix_cities_name"
+DETAIL:  Key (name)=(İzmir) already exists.
+[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
+[parameters: ('İzmir', 'GY')]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2025-07-23 13:51:34,720 - WARNING - Integrity error for city 'İzmir': (sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "ix_cities_name"
+DETAIL:  Key (name)=(İzmir) already exists.
+[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
+[parameters: ('İzmir', 'NZ')]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2025-07-23 13:51:34,979 - INFO - 📊 Progress: 4000/10000 cities processed...
+2025-07-23 13:51:35,374 - WARNING - Integrity error for city 'İzmir': (sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "ix_cities_name"
+DETAIL:  Key (name)=(İzmir) already exists.
+[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
+[parameters: ('İzmir', 'YE')]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2025-07-23 13:51:35,453 - INFO - 📊 Progress: 5000/10000 cities processed...
+2025-07-23 13:51:35,458 - WARNING - Integrity error for city 'İzmir': (sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "ix_cities_name"
+DETAIL:  Key (name)=(İzmir) already exists.
+[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
+[parameters: ('İzmir', 'BT')]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2025-07-23 13:51:35,751 - WARNING - Integrity error for city 'İzmir': (sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "ix_cities_name"
+DETAIL:  Key (name)=(İzmir) already exists.
+[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
+[parameters: ('İzmir', 'GS')]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2025-07-23 13:51:35,935 - INFO - 📊 Progress: 6000/10000 cities processed...
+2025-07-23 13:51:36,049 - WARNING - Integrity error for city 'İzmir': (sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "ix_cities_name"
+DETAIL:  Key (name)=(İzmir) already exists.
+[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
+[parameters: ('İzmir', 'RE')]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2025-07-23 13:51:36,300 - WARNING - Integrity error for city 'İzmir': (sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "ix_cities_name"
+DETAIL:  Key (name)=(İzmir) already exists.
+[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
+[parameters: ('İzmir', 'GF')]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2025-07-23 13:51:36,405 - INFO - 📊 Progress: 7000/10000 cities processed...
+2025-07-23 13:51:36,563 - WARNING - Integrity error for city 'İzmir': (sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "ix_cities_name"
+DETAIL:  Key (name)=(İzmir) already exists.
+[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
+[parameters: ('İzmir', 'HN')]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2025-07-23 13:51:36,590 - WARNING - Integrity error for city 'İzmir': (sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "ix_cities_name"
+DETAIL:  Key (name)=(İzmir) already exists.
+[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
+[parameters: ('İzmir', 'BY')]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2025-07-23 13:51:36,640 - WARNING - Integrity error for city 'İzmir': (sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "ix_cities_name"
+DETAIL:  Key (name)=(İzmir) already exists.
+[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
+[parameters: ('İzmir', 'IT')]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2025-07-23 13:51:36,645 - WARNING - Integrity error for city 'İzmir': (sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "ix_cities_name"
+DETAIL:  Key (name)=(İzmir) already exists.
+[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
+[parameters: ('İzmir', 'PT')]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2025-07-23 13:51:36,722 - WARNING - Integrity error for city 'İzmir': (sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "ix_cities_name"
+DETAIL:  Key (name)=(İzmir) already exists.
+[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
+[parameters: ('İzmir', 'PH')]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2025-07-23 13:51:36,882 - INFO - 📊 Progress: 8000/10000 cities processed...
+2025-07-23 13:51:36,992 - WARNING - Integrity error for city 'İzmir': (sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "ix_cities_name"
+DETAIL:  Key (name)=(İzmir) already exists.
+[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
+[parameters: ('İzmir', 'KW')]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2025-07-23 13:51:37,007 - WARNING - Integrity error for city 'İzmir': (sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "ix_cities_name"
+DETAIL:  Key (name)=(İzmir) already exists.
+[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
+[parameters: ('İzmir', 'GT')]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2025-07-23 13:51:37,266 - WARNING - Integrity error for city 'İzmir': (sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "ix_cities_name"
+DETAIL:  Key (name)=(İzmir) already exists.
+[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
+[parameters: ('İzmir', 'BA')]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2025-07-23 13:51:37,355 - INFO - 📊 Progress: 9000/10000 cities processed...
+2025-07-23 13:51:37,576 - WARNING - Integrity error for city 'İzmir': (sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "ix_cities_name"
+DETAIL:  Key (name)=(İzmir) already exists.
+[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
+[parameters: ('İzmir', 'CA')]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2025-07-23 13:51:37,829 - INFO - 🎉 CSV data loading completed!
+2025-07-23 13:51:37,829 - INFO - 📊 Final Statistics:
+2025-07-23 13:51:37,829 - INFO -    - Total rows in CSV: 10000
+2025-07-23 13:51:37,829 - INFO -    - Successfully processed: 10000
+2025-07-23 13:51:37,829 - INFO -    - Cities created: 660
+2025-07-23 13:51:37,829 - INFO -    - Cities updated: 9275
+2025-07-23 13:51:37,829 - INFO -    - Rows skipped: 47
+2025-07-23 13:51:37,829 - INFO -    - Processing time: 4.90s
+2025-07-23 13:51:37,829 - WARNING - ⚠️  18 errors occurred during processing
+2025-07-23 13:51:37,829 - WARNING -    - Showing first 5 errors:
+2025-07-23 13:51:37,829 - WARNING -    - Row 2686: İzmir - Integrity error: (sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "ix_cities_name"
+DETAIL:  Key (name)=(İzmir) already exists.
+[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
+[parameters: ('İzmir', 'SA')]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2025-07-23 13:51:37,829 - WARNING -    - Row 3108: İzmir - Integrity error: (sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "ix_cities_name"
+DETAIL:  Key (name)=(İzmir) already exists.
+[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
+[parameters: ('İzmir', 'SI')]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2025-07-23 13:51:37,829 - WARNING -    - Row 3286: İzmir - Integrity error: (sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "ix_cities_name"
+DETAIL:  Key (name)=(İzmir) already exists.
+[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
+[parameters: ('İzmir', 'GY')]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2025-07-23 13:51:37,829 - WARNING -    - Row 3462: İzmir - Integrity error: (sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "ix_cities_name"
+DETAIL:  Key (name)=(İzmir) already exists.
+[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
+[parameters: ('İzmir', 'NZ')]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2025-07-23 13:51:37,829 - WARNING -    - Row 4833: İzmir - Integrity error: (sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.UniqueViolationError'>: duplicate key value violates unique constraint "ix_cities_name"
+DETAIL:  Key (name)=(İzmir) already exists.
+[SQL: INSERT INTO cities (name, country_code) VALUES ($1::VARCHAR, $2::VARCHAR) RETURNING cities.id, cities.created_at, cities.updated_at]
+[parameters: ('İzmir', 'YE')]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2025-07-23 13:51:37,829 - WARNING -    - ... and 13 more
+2025-07-23 13:51:37,829 - WARNING - ⚠️  Data loading completed with errors
+[INFO] ✓ CSV data loaded successfully
+[STEP] 🧪 Running comprehensive API tests...
+[INFO] Executing test suite inside container...
+⏳ Waiting 2 seconds for API to be ready...
 
-# start.sh - Complete startup script for City Service API
-# This script handles the entire project lifecycle
+============================================================
+ Starting City Service API Tests
+============================================================
 
-# Colors for better output
-COLOR_GREEN='\033[0;32m'
-COLOR_YELLOW='\033[1;33m'
-COLOR_RED='\033[0;31m'
-COLOR_BLUE='\033[0;34m'
-NC='\033[0m' # No Color
+============================================================
+ Testing Health Endpoint
+============================================================
+✅ Health check passed - Status: healthy
+✅ Database is healthy
+✅ Redis is healthy
+✅ Kafka is healthy
 
-# Function to print formatted messages
-info() {
-    echo -e "${COLOR_GREEN}[INFO]${NC} $1"
-}
+============================================================
+ Testing CRUD Operations
+============================================================
+❌ Failed to create city Tokyo: 307
+❌ Failed to create city London: 307
+❌ Failed to create city New York: 307
+❌ Failed to create city Paris: 307
+❌ Failed to create city Berlin: 307
+❌ Failed to get country code for Tokyo: 404
+❌ Failed to get country code for London: 404
+❌ Failed to get country code for New York: 404
+❌ Failed to get country code for Paris: 404
+❌ Failed to get country code for Berlin: 404
+❌ Failed to list cities: 307
+❌ Failed to get metrics: 404
 
-warn() {
-    echo -e "${COLOR_YELLOW}[WARN]${NC} $1"
-}
+============================================================
+ Testing Cache Performance
+============================================================
+ℹ️  Testing cache miss performance...
+❌ Cache miss request failed: 404
+ℹ️  Testing cache hit performance...
+❌ Cache hit request failed: 404
+ℹ️  Cache performance difference: 21.6% (hit might be slower due to network variance)
+ℹ️  Cache miss time: 10.55ms
+ℹ️  Cache hit time: 13.45ms
 
-error() {
-    echo -e "${COLOR_RED}[ERROR]${NC} $1"
-}
+============================================================
+ Testing Error Handling
+============================================================
+✅ 404 error handling works correctly
+❌ Expected 422, got 307
 
-step() {
-    echo -e "${COLOR_BLUE}[STEP]${NC} $1"
-}
+============================================================
+ Testing Concurrent Requests
+============================================================
+❌ Failed to get country code for Paris: request failed
+❌ Failed to get country code for London: request failed
+❌ Failed to get country code for Rome: request failed
+❌ Failed to get country code for Madrid: request failed
+❌ Failed to get country code for Berlin: request failed
+✅ Concurrent requests completed: 0/5
+ℹ️  Total time: 112.15ms
+ℹ️  Average time per request: 22.43ms
+❌ Failed to delete city Tokyo: 404
 
-# Check prerequisites
-check_prerequisites() {
-    step "🔍 Checking prerequisites..."
-    
-    if ! command -v docker &> /dev/null; then
-        error "Docker is not installed. Please install Docker first."
-        exit 1
-    fi
-    
-    if ! command -v docker-compose &> /dev/null; then
-        error "Docker Compose is not installed. Please install Docker Compose first."
-        exit 1
-    fi
-    
-    # Check if CSV file exists in root directory
-    if [ ! -f "country-code.csv" ]; then
-        error "CSV file 'country-code.csv' not found in project root directory!"
-        error "Please place your CSV file (with columns: Country Code, City) in the same directory as this script."
-        exit 1
-    fi
-    
-    info "✓ Prerequisites satisfied"
-    info "✓ CSV file found: country-code.csv"
-}
-
-# Clean up previous environment
-cleanup_previous() {
-    step "🧹 Cleaning up previous environment..."
-    
-    if [ "$(docker-compose ps -q)" ]; then
-        info "Stopping existing containers..."
-        docker-compose down -v --remove-orphans
-        info "✓ Previous environment cleaned"
-    else
-        info "✓ No previous environment to clean"
-    fi
-}
-
-# Build and start services
-start_services() {
-    step "🚀 Building and starting all services..."
-    
-    info "Building Docker images..."
-    docker-compose build --no-cache
-    
-    info "Starting services in background..."
-    docker-compose up -d
-    
-    if [ $? -ne 0 ]; then
-        error "❌ Failed to start services"
-        exit 1
-    fi
-    
-    info "✓ All services starting..."
-}
-
-# Wait for PostgreSQL to be ready
-wait_for_postgres() {
-    step "⏳ Waiting for PostgreSQL..."
-    
-    local counter=0
-    local max_attempts=30
-    
-    while ! docker exec city_service_postgres pg_isready -U postgres -q; do
-        if [ $counter -ge $max_attempts ]; then
-            error "❌ PostgreSQL failed to start within 60 seconds"
-            docker-compose logs postgres
-            exit 1
-        fi
-        counter=$((counter+1))
-        printf "."
-        sleep 2
-    done
-    
-    echo ""
-    info "✓ PostgreSQL is ready"
-}
-
-# Wait for Redis to be ready
-wait_for_redis() {
-    step "⏳ Waiting for Redis..."
-    
-    local counter=0
-    local max_attempts=30
-    
-    while ! docker exec city_service_redis redis-cli ping | grep -q PONG; do
-        if [ $counter -ge $max_attempts ]; then
-            error "❌ Redis failed to start within 60 seconds"
-            docker-compose logs redis
-            exit 1
-        fi
-        counter=$((counter+1))
-        printf "."
-        sleep 2
-    done
-    
-    echo ""
-    info "✓ Redis is ready"
-}
-
-# Wait for Kafka to be ready
-wait_for_kafka() {
-    step "⏳ Waiting for Kafka..."
-    
-    local counter=0
-    local max_attempts=45
-    
-    while ! docker-compose exec -T kafka kafka-topics --bootstrap-server localhost:9092 --list &>/dev/null; do
-        if [ $counter -ge $max_attempts ]; then
-            error "❌ Kafka failed to start within 90 seconds"
-            docker-compose logs kafka
-            exit 1
-        fi
-        counter=$((counter+1))
-        printf "."
-        sleep 2
-    done
-    
-    echo ""
-    info "✓ Kafka is ready"
-}
-
-# Create Kafka topic
-create_kafka_topic() {
-    step "📝 Creating Kafka topic..."
-    
-    # Check if topic already exists
-    if docker-compose exec -T kafka kafka-topics --bootstrap-server localhost:9092 --list | grep -q "city_service_logs"; then
-        info "✓ Kafka topic 'city_service_logs' already exists"
-    else
-        info "Creating Kafka topic 'city_service_logs'..."
-        docker-compose exec -T kafka kafka-topics \
-            --bootstrap-server localhost:9092 \
-            --create \
-            --topic city_service_logs \
-            --partitions 1 \
-            --replication-factor 1 \
-            --config retention.ms=604800000
-        
-        if [ $? -eq 0 ]; then
-            info "✓ Kafka topic created successfully"
-        else
-            warn "⚠️  Failed to create Kafka topic, but continuing..."
-        fi
-    fi
-}
-
-# Wait for FastAPI application to be healthy
-wait_for_app() {
-    step "⏳ Waiting for FastAPI application..."
-    
-    local counter=0
-    local max_attempts=30
-    
-    while ! curl -sf -o /dev/null http://localhost:8000/health; do
-        if [ $counter -ge $max_attempts ]; then
-            error "❌ FastAPI application failed to start within 60 seconds"
-            error "Check logs with: docker-compose logs app"
-            exit 1
-        fi
-        counter=$((counter+1))
-        printf "."
-        sleep 2
-    done
-    
-    echo ""
-    info "✓ FastAPI application is healthy"
-}
-
-# Load CSV data into database
-load_csv_data() {
-    step "📊 Loading CSV data into database..."
-    
-    info "Loading country-code.csv via load_csv_data.py script..."
-    # Fixed: Use -m flag to run as module to avoid import issues
-    docker-compose exec -T app python -m scripts.load_csv_data
-    
-    if [ $? -eq 0 ]; then
-        info "✓ CSV data loaded successfully"
-    else
-        error "❌ Failed to load CSV data"
-        error "Check the output above for details"
-        exit 1
-    fi
-}
-
-# Run comprehensive tests
-run_tests() {
-    step "🧪 Running comprehensive API tests..."
-    
-    info "Executing test suite inside container..."
-    # Fixed: Use -m flag to run as module to avoid import issues
-    docker-compose exec -T app python -m scripts.test_api
-    
-    if [ $? -eq 0 ]; then
-        info "✓ All tests passed successfully"
-    else
-        error "❌ Some tests failed"
-        error "Check the test output above for details"
-        exit 1
-    fi
-}
-
-# Display final information
-show_access_info() {
-    step "🎉 Application is ready!"
-    
-    echo ""
-    echo "========================================================="
-    echo "           🚀 CITY SERVICE API IS RUNNING! 🚀"
-    echo "========================================================="
-    echo ""
-    echo "📚 API Documentation:    http://localhost:8000/docs"
-    echo "❤️  Health Check:        http://localhost:8000/health"
-    echo "📊 Kafka UI:             http://localhost:8080"
-    echo "📝 Application Info:     http://localhost:8000/info"
-    echo ""
-    echo "🔧 Management Commands:"
-    echo "   View logs:            docker-compose logs -f"
-    echo "   View app logs only:   docker-compose logs -f app"
-    echo "   Stop services:        docker-compose down"
-    echo "   Restart services:     docker-compose restart"
-    echo ""
-    echo "🗄️  Database Access:"
-    echo "   PostgreSQL:           psql -h localhost -U postgres -d citydb"
-    echo "   Redis CLI:            redis-cli -h localhost -p 6379"
-    echo ""
-    echo "📋 Example API Calls:"
-    echo "   Create city:          curl -X POST http://localhost:8000/api/v1/cities/ -H 'Content-Type: application/json' -d '{\"name\":\"TestCity\",\"country_code\":\"TC\"}'"
-    echo "   Get country code:     curl http://localhost:8000/api/v1/cities/SanDiego/country-code"
-    echo "   List cities:          curl http://localhost:8000/api/v1/cities/"
-    echo "   Get metrics:          curl http://localhost:8000/api/v1/cities/metrics"
-    echo ""
-    echo "========================================================="
-    echo "✨ Your City Service API is fully operational!"
-    echo "========================================================="
-}
-
-# Main execution flow
-main() {
-    echo "🌟 City Service API - Complete Startup Script"
-    echo "=============================================="
-    
-    # Execute all steps in order
-    check_prerequisites
-    cleanup_previous
-    start_services
-    wait_for_postgres
-    wait_for_redis
-    wait_for_kafka
-    create_kafka_topic
-    wait_for_app
-    load_csv_data
-    run_tests
-    show_access_info
-    
-    info "🎯 Startup completed successfully!"
-}
-
-# Error handling
-set -e
-trap 'error "❌ Script failed on line $LINENO"' ERR
-
-# Run main function
-main "$@"
+============================================================
+ Test Summary
+============================================================
+❌ Tests passed: 6/27 (22.2%)
+❌ Tests failed: 22
