@@ -1,108 +1,52 @@
-# app/database.py
-
-import asyncio
-import logging
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, AsyncEngine
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy import text
-from contextlib import asynccontextmanager
-from typing import AsyncGenerator
-
-from app.config import settings
-from app.models import Base
-
-logger = logging.getLogger(__name__)
-
-
-class DatabaseManager:
-    def __init__(self):
-        self.engine: AsyncEngine = None
-        self.session_factory: sessionmaker = None
-
-    async def initialize(self):
-        """Initialize database connection with retries for robustness."""
-        max_retries = 5
-        retry_delay = 5  # seconds
-
-        for attempt in range(max_retries):
-            try:
-                logger.info(f"Database connection attempt {attempt + 1}/{max_retries}...")
-                
-                self.engine = create_async_engine(
-                    settings.database_url,
-                    echo=settings.debug,
-                    pool_pre_ping=True
-                )
-
-                # Test connection and create tables
-                async with self.engine.begin() as conn:
-                    await conn.run_sync(Base.metadata.create_all)
-                
-                logger.info("Database initialized successfully.")
-                return  # Exit the function on success
-
-            except Exception as e:
-                logger.warning(f"Database connection attempt {attempt + 1} failed: {e}")
-                if self.engine:
-                    await self.engine.dispose() # Dispose of the failed engine
-                if attempt + 1 == max_retries:
-                    logger.error("All database connection attempts failed. Application cannot start.")
-                    raise
-                logger.info(f"Retrying in {retry_delay} seconds...")
-                await asyncio.sleep(retry_delay)
-
-    async def close(self):
-        """Close database connections."""
-        if self.engine:
-            await self.engine.dispose()
-            logger.info("Database connections closed.")
-
-    async def health_check(self) -> bool:
-        """Check database health."""
-        if not self.engine:
-            return False
-        try:
-            async with self.engine.connect() as conn:
-                result = await conn.execute(text("SELECT 1"))
-                return result.scalar_one_or_none() == 1
-        except Exception:
-            return False
-
-    @asynccontextmanager
-    async def get_session(self) -> AsyncGenerator[AsyncSession, None]:
-        """Get database session with proper cleanup."""
-        if not self.session_factory:
-             self.session_factory = sessionmaker(
-                bind=self.engine, class_=AsyncSession, expire_on_commit=False
-            )
-
-        async with self.session_factory() as session:
-            try:
-                yield session
-                await session.commit()
-            except Exception as e:
-                await session.rollback()
-                logger.error(f"Database session error: {e}", exc_info=True)
-                raise
-            finally:
-                await session.close()
-
-
-# Global database manager instance
-db_manager = DatabaseManager()
-
-
-async def get_db() -> AsyncGenerator[AsyncSession, None]:
-    """Dependency for getting database session."""
-    async with db_manager.get_session() as session:
-        yield session
-
-
-async def init_db():
-    """Initialize database."""
-    await db_manager.initialize()
-
-
-async def close_db():
-    """Close database."""
-    await db_manager.close()
+2025-07-23 08:32:56 - app.main - INFO - ✅ Database initialized successfully
+city_service_app  | 2025-07-23 08:32:56 - app.main - INFO - 🚀 Initializing cache system...
+city_service_app  | 2025-07-23 08:32:56 - app.cache - INFO - ✅ Redis connection established
+city_service_app  | 2025-07-23 08:32:56 - app.cache - INFO - 🚀 Cache manager initialized
+city_service_app  | 2025-07-23 08:32:56 - app.main - INFO - ✅ Cache system initialized successfully
+city_service_app  | 2025-07-23 08:32:56 - app.main - INFO - 📨 Initializing Kafka producer...
+city_service_app  | 2025-07-23 08:32:56 - app.kafka_logger - INFO - 🔌 Kafka connection attempt 1/5
+city_service_app  | 2025-07-23 08:32:56 - app.kafka_logger - ERROR - ❌ Kafka connection attempt 1 failed: AIOKafkaProducer.__init__() got an unexpected keyword argument 'batch_size'
+city_service_app  | 2025-07-23 08:32:56 - app.kafka_logger - INFO - ⏳ Retrying Kafka connection in 5 seconds...
+city_service_app  | 2025-07-23 08:33:01 - app.kafka_logger - INFO - 🔌 Kafka connection attempt 2/5
+city_service_app  | 2025-07-23 08:33:01 - app.kafka_logger - ERROR - ❌ Kafka connection attempt 2 failed: AIOKafkaProducer.__init__() got an unexpected keyword argument 'batch_size'
+city_service_app  | 2025-07-23 08:33:01 - app.kafka_logger - INFO - ⏳ Retrying Kafka connection in 5 seconds...
+city_service_app  | 2025-07-23 08:33:06 - app.kafka_logger - INFO - 🔌 Kafka connection attempt 3/5
+city_service_app  | 2025-07-23 08:33:06 - app.kafka_logger - ERROR - ❌ Kafka connection attempt 3 failed: AIOKafkaProducer.__init__() got an unexpected keyword argument 'batch_size'
+city_service_app  | 2025-07-23 08:33:06 - app.kafka_logger - INFO - ⏳ Retrying Kafka connection in 5 seconds...
+city_service_app  | 2025-07-23 08:33:11 - app.kafka_logger - INFO - 🔌 Kafka connection attempt 4/5
+city_service_app  | 2025-07-23 08:33:11 - app.kafka_logger - ERROR - ❌ Kafka connection attempt 4 failed: AIOKafkaProducer.__init__() got an unexpected keyword argument 'batch_size'
+city_service_app  | 2025-07-23 08:33:11 - app.kafka_logger - INFO - ⏳ Retrying Kafka connection in 5 seconds...
+city_service_app  | 2025-07-23 08:33:16 - app.kafka_logger - INFO - 🔌 Kafka connection attempt 5/5
+city_service_app  | 2025-07-23 08:33:16 - app.kafka_logger - ERROR - ❌ Kafka connection attempt 5 failed: AIOKafkaProducer.__init__() got an unexpected keyword argument 'batch_size'
+city_service_app  | 2025-07-23 08:33:16 - app.kafka_logger - ERROR - 💥 All Kafka connection attempts failed - operating in degraded mode
+city_service_app  | 2025-07-23 08:33:16 - app.main - INFO - ✅ Kafka producer initialized successfully
+city_service_app  | 2025-07-23 08:33:16 - app.main - INFO - 🎉 City Service API started successfully in 20.09s
+city_service_app  | 2025-07-23 08:33:16 - app.kafka_logger - WARNING - ⚠️  Kafka not connected - message queued
+city_service_app  | 2025-07-23 08:33:16 - app.main - ERROR - 💥 Failed to start City Service API: object NoneType can't be used in 'await' expression
+city_service_app  | Traceback (most recent call last):
+city_service_app  |   File "/app/app/main.py", line 91, in lifespan
+city_service_app  |     await log_application_startup()
+city_service_app  |   File "/app/app/kafka_logger.py", line 504, in log_application_startup
+city_service_app  |     await kafka_logger._send_system_event(
+city_service_app  |   File "/app/app/kafka_logger.py", line 368, in _send_system_event
+city_service_app  |     await self._send_message(settings.kafka_topic, event_message.to_dict())
+city_service_app  |   File "/app/app/kafka_logger.py", line 253, in _send_message
+city_service_app  |     await self._message_queue.put_nowait((topic, message))
+city_service_app  | TypeError: object NoneType can't be used in 'await' expression
+city_service_app  | ERROR:    Traceback (most recent call last):
+city_service_app  |   File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 677, in lifespan
+city_service_app  |     async with self.lifespan_context(app) as maybe_state:
+city_service_app  |   File "/usr/local/lib/python3.11/contextlib.py", line 210, in __aenter__
+city_service_app  |     return await anext(self.gen)
+city_service_app  |            ^^^^^^^^^^^^^^^^^^^^^
+city_service_app  |   File "/app/app/main.py", line 91, in lifespan
+city_service_app  |     await log_application_startup()
+city_service_app  |   File "/app/app/kafka_logger.py", line 504, in log_application_startup
+city_service_app  |     await kafka_logger._send_system_event(
+city_service_app  |   File "/app/app/kafka_logger.py", line 368, in _send_system_event
+city_service_app  |     await self._send_message(settings.kafka_topic, event_message.to_dict())
+city_service_app  |   File "/app/app/kafka_logger.py", line 253, in _send_message
+city_service_app  |     await self._message_queue.put_nowait((topic, message))
+city_service_app  | TypeError: object NoneType can't be used in 'await' expression
+city_service_app  | 
+city_service_app  | ERROR:    Application startup failed. Exiting.
