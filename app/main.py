@@ -1,536 +1,242 @@
-# City Service API - FastAPI Application
-# Production-ready FastAPI app with comprehensive lifecycle management
+# app/main.py
 
+import asyncio
 import logging
 import time
-import asyncio
 from contextlib import asynccontextmanager
 from datetime import datetime
 from typing import Dict, Any
 
-from fastapi import FastAPI, Request, HTTPException, status
+from fastapi import FastAPI, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from app.config import settings, validate_configuration
-from app.database import init_db, close_db, db_manager, check_database_health
+from app.config import settings
+from app.database import init_db, close_db, db_manager, ensure_tables_exist
 from app.cache import init_cache, close_cache, cache_manager
-from app.kafka_logger import init_kafka, close_kafka, kafka_logger, log_application_startup, log_application_shutdown
+from app.kafka_logger import kafka_logger, init_kafka, close_kafka
 from app.api.cities import router as cities_router
-from app.schemas import HealthResponse, ErrorResponse, create_error_response
+from app.schemas import HealthResponse, ErrorResponse
 
-# Configure logging with structured format
+# Configure logging
 logging.basicConfig(
     level=getattr(logging, settings.log_level.upper()),
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    datefmt='%Y-%m-%d %H:%M:%S'
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
 
-# Application startup time for uptime calculation
+# Application startup time
 app_start_time = time.time()
 
 
-# =============================================================================
-# APPLICATION LIFECYCLE MANAGEMENT
-# =============================================================================
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """
-    Manage FastAPI application lifecycle with comprehensive startup/shutdown.
-    
-    Startup sequence:
-    1. Validate configuration
-    2. Initialize database with retry logic
-    3. Initialize cache system (Redis + local LRU)
-    4. Initialize Kafka producer
-    5. Log startup completion
-    
-    Shutdown sequence:
-    1. Log shutdown initiation
-    2. Close Kafka connections
-    3. Close cache connections  
-    4. Close database connections
-    5. Log shutdown completion
-    """
-    # =============================================================================
-    # STARTUP SEQUENCE
-    # =============================================================================
-    
+    """Application lifespan manager with proper error handling."""
+    # Startup
     logger.info("🚀 Starting City Service API...")
-    startup_start = time.time()
     
     try:
-        # Step 1: Configuration validation
-        logger.info("⚙️  Validating configuration...")
-        validate_configuration()
-        
-        # Step 2: Database initialization
-        logger.info("🗄️  Initializing database...")
+        # Initialize database with retries
+        logger.info("📊 Initializing database...")
         await init_db()
-        logger.info("✅ Database initialized successfully")
+        logger.info("✅ Database initialized")
         
-        # Step 3: Cache system initialization
-        logger.info("🚀 Initializing cache system...")
+        # Ensure all tables exist (safety check)
+        await ensure_tables_exist()
+        logger.info("✅ Database tables verified")
+        
+        # Initialize cache
+        logger.info("🗄️  Initializing cache...")
         await init_cache()
-        logger.info("✅ Cache system initialized successfully")
+        logger.info("✅ Cache initialized")
         
-        # Step 4: Kafka producer initialization
-        logger.info("📨 Initializing Kafka producer...")
+        # Initialize Kafka
+        logger.info("📨 Initializing Kafka...")
         await init_kafka()
-        logger.info("✅ Kafka producer initialized successfully")
+        logger.info("✅ Kafka initialized")
         
-        # Step 5: Log successful startup
-        startup_time = time.time() - startup_start
-        logger.info(f"🎉 City Service API started successfully in {startup_time:.2f}s")
-        
-        # Send startup event to Kafka
-        await log_application_startup()
-        
-        # Yield control to FastAPI application
-        yield
+        logger.info("🎉 City Service API started successfully")
         
     except Exception as e:
-        logger.error(f"💥 Failed to start City Service API: {e}", exc_info=True)
+        logger.error(f"❌ Failed to start application: {e}")
+        logger.error("💥 Application startup failed")
         raise
     
-    # =============================================================================
-    # SHUTDOWN SEQUENCE
-    # =============================================================================
+    yield
     
-    logger.info("🔄 Shutting down City Service API...")
-    shutdown_start = time.time()
+    # Shutdown
+    logger.info("🛑 Shutting down City Service API...")
     
     try:
-        # Step 1: Log shutdown initiation
-        await log_application_shutdown()
-        
-        # Step 2: Close Kafka connections
-        logger.info("📨 Closing Kafka connections...")
+        # Close Kafka
         await close_kafka()
-        logger.info("✅ Kafka connections closed")
+        logger.info("✅ Kafka closed")
         
-        # Step 3: Close cache connections
-        logger.info("🚀 Closing cache system...")
+        # Close cache
         await close_cache()
-        logger.info("✅ Cache system closed")
+        logger.info("✅ Cache closed")
         
-        # Step 4: Close database connections
-        logger.info("🗄️  Closing database connections...")
+        # Close database
         await close_db()
-        logger.info("✅ Database connections closed")
+        logger.info("✅ Database closed")
         
-        # Step 5: Final shutdown log
-        shutdown_time = time.time() - shutdown_start
-        total_uptime = time.time() - app_start_time
-        logger.info(f"✨ City Service API shutdown complete in {shutdown_time:.2f}s (uptime: {total_uptime:.2f}s)")
+        logger.info("🎯 City Service API shutdown complete")
         
     except Exception as e:
-        logger.error(f"❌ Error during shutdown: {e}", exc_info=True)
+        logger.error(f"❌ Error during shutdown: {e}")
 
 
-# =============================================================================
-# FASTAPI APPLICATION CREATION
-# =============================================================================
-
+# Create FastAPI application
 app = FastAPI(
     title=settings.project_name,
-    version=settings.app_version,
-    description="""
-    **City Service API** - A production-ready FastAPI microservice for managing cities and their country codes.
-    
-    ## Features
-    
-    * **PostgreSQL Database**: Async SQLAlchemy with connection pooling
-    * **Redis Caching**: LRU cache with exactly 10 items and 10-minute TTL  
-    * **Kafka Logging**: Comprehensive request logging with performance metrics
-    * **CSV Data Import**: Bulk import from CSV files with validation
-    * **Health Monitoring**: Detailed health checks for all services
-    * **Performance Metrics**: Real-time cache hit rates and response times
-    
-    ## API Endpoints
-    
-    * **POST /api/v1/cities/**: Create or update cities
-    * **GET /api/v1/cities/{city_name}/country-code**: Get country code (with caching)
-    * **GET /api/v1/cities/**: List cities with pagination and search
-    * **GET /api/v1/cities/metrics**: Performance and cache metrics
-    * **DELETE /api/v1/cities/{city_name}**: Delete cities
-    * **GET /health**: Comprehensive health check
-    """,
-    docs_url=settings.docs_url if not settings.is_production else None,
-    redoc_url=settings.redoc_url if not settings.is_production else None,
-    openapi_url="/openapi.json" if not settings.is_production else None,
-    lifespan=lifespan,
-    # API metadata
-    contact={
-        "name": "City Service API Support",
-        "email": "support@cityservice.com",
-    },
-    license_info={
-        "name": "MIT License",
-        "url": "https://opensource.org/licenses/MIT",
-    },
-    tags_metadata=[
-        {
-            "name": "cities",
-            "description": "City management operations with country code associations",
-        },
-        {
-            "name": "health",
-            "description": "Health checks and system monitoring",
-        },
-        {
-            "name": "metrics",
-            "description": "Performance metrics and cache statistics",
-        },
-    ]
+    version="1.0.0",
+    description="A FastAPI application for managing cities and their country codes with Redis caching and Kafka logging",
+    lifespan=lifespan
 )
 
-
-# =============================================================================
-# MIDDLEWARE CONFIGURATION
-# =============================================================================
-
-# CORS middleware for cross-origin requests
+# Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.cors_origins,
+    allow_origins=["*"],
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_methods=["*"],
     allow_headers=["*"],
-    expose_headers=["X-Request-ID", "X-Response-Time"],
 )
 
 
-# Request/Response logging and timing middleware
+# Request logging middleware
 @app.middleware("http")
-async def request_logging_middleware(request: Request, call_next):
-    """
-    Log all HTTP requests with timing and performance metrics.
-    Adds request ID and response time headers for debugging.
-    """
+async def log_requests(request: Request, call_next):
+    """Log all HTTP requests"""
     start_time = time.time()
-    request_id = f"{int(start_time * 1000)}-{hash(str(request.url))}"
     
-    # Add request ID to request state
-    request.state.request_id = request_id
+    # Process request
+    response = await call_next(request)
     
-    try:
-        # Process the request
-        response = await call_next(request)
-        
-        # Calculate response time
-        response_time = time.time() - start_time
-        
-        # Add headers for debugging
-        response.headers["X-Request-ID"] = request_id
-        response.headers["X-Response-Time"] = f"{response_time * 1000:.2f}ms"
-        
-        # Log request details
-        logger.info(
-            f"🌐 {request.method} {request.url.path} - "
-            f"Status: {response.status_code} - "
-            f"Time: {response_time * 1000:.2f}ms - "
-            f"ID: {request_id}"
-        )
-        
-        return response
-        
-    except Exception as e:
-        response_time = time.time() - start_time
-        logger.error(
-            f"❌ {request.method} {request.url.path} - "
-            f"Error: {str(e)} - "
-            f"Time: {response_time * 1000:.2f}ms - "
-            f"ID: {request_id}",
-            exc_info=True
-        )
-        raise
+    # Calculate response time
+    response_time = time.time() - start_time
+    
+    # Log request details
+    logger.info(
+        f"{request.method} {request.url.path} - "
+        f"Status: {response.status_code} - "
+        f"Time: {response_time:.4f}s"
+    )
+    
+    return response
 
 
-# =============================================================================
-# EXCEPTION HANDLERS
-# =============================================================================
-
+# Exception handlers
 @app.exception_handler(HTTPException)
 async def http_exception_handler(request: Request, exc: HTTPException):
-    """Handle HTTP exceptions with structured error responses."""
-    request_id = getattr(request.state, 'request_id', None)
-    
-    # Log to Kafka for monitoring
-    if kafka_logger.is_healthy():
-        asyncio.create_task(
-            kafka_logger.log_error(
-                error_type="http_exception",
-                error_message=exc.detail,
-                context={
-                    "status_code": exc.status_code,
-                    "path": str(request.url.path),
-                    "method": request.method,
-                    "request_id": request_id
-                }
-            )
-        )
-    
-    return JSONResponse(
-        status_code=exc.status_code,
-        content=create_error_response(
-            message=exc.detail,
-            error_type="http_exception",
-            request_id=request_id
-        ).dict(),
-        headers={"X-Request-ID": request_id} if request_id else {}
-    )
+    """Handle HTTP exceptions"""
+    error_data = {"detail": exc.detail, "error_type": "http_exception"}
+    return JSONResponse(status_code=exc.status_code, content=error_data)
 
 
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
-    """Handle Pydantic validation errors with detailed field information."""
-    request_id = getattr(request.state, 'request_id', None)
-    
-    # Extract field errors for detailed response
-    field_errors = []
-    for error in exc.errors():
-        field_errors.append({
-            "field": ".".join(str(x) for x in error["loc"]),
-            "message": error["msg"],
-            "type": error["type"]
-        })
-    
-    # Log validation error to Kafka
-    if kafka_logger.is_healthy():
-        asyncio.create_task(
-            kafka_logger.log_error(
-                error_type="validation_error",
-                error_message=f"Validation failed for {len(field_errors)} field(s)",
-                context={
-                    "path": str(request.url.path),
-                    "method": request.method,
-                    "field_errors": field_errors,
-                    "request_id": request_id
-                }
-            )
-        )
-    
-    return JSONResponse(
-        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-        content={
-            "detail": "Validation failed",
-            "error_type": "validation_error",
-            "field_errors": field_errors,
-            "timestamp": datetime.utcnow().isoformat() + "Z",
-            "request_id": request_id
-        },
-        headers={"X-Request-ID": request_id} if request_id else {}
-    )
+    """Handle validation errors"""
+    error_data = {
+        "detail": "Validation error",
+        "error_type": "validation_error",
+        "field_errors": exc.errors(),
+    }
+    return JSONResponse(status_code=422, content=error_data)
 
 
 @app.exception_handler(Exception)
 async def general_exception_handler(request: Request, exc: Exception):
-    """Handle unexpected exceptions with error logging and monitoring."""
-    request_id = getattr(request.state, 'request_id', None)
-    
-    # Log the unexpected exception
-    logger.error(
-        f"💥 Unhandled exception in {request.method} {request.url.path}: {exc}",
-        exc_info=True
-    )
-    
-    # Log to Kafka for monitoring
-    if kafka_logger.is_healthy():
-        asyncio.create_task(
-            kafka_logger.log_error(
-                error_type="internal_server_error",
-                error_message=str(exc),
-                stack_trace=str(exc.__traceback__) if exc.__traceback__ else None,
-                context={
-                    "path": str(request.url.path),
-                    "method": request.method,
-                    "exception_type": type(exc).__name__,
-                    "request_id": request_id
-                }
-            )
-        )
-    
-    return JSONResponse(
-        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        content=create_error_response(
-            message="Internal server error occurred",
-            error_type="internal_server_error",
-            request_id=request_id
-        ).dict(),
-        headers={"X-Request-ID": request_id} if request_id else {}
-    )
+    """Handle general exceptions"""
+    logger.error(f"Unhandled exception: {exc}", exc_info=True)
+    error_data = {"detail": "Internal server error", "error_type": "general_exception"}
+    return JSONResponse(status_code=500, content=error_data)
 
 
-# =============================================================================
-# ROOT AND UTILITY ENDPOINTS
-# =============================================================================
-
-@app.get("/", tags=["root"])
+# Root endpoint
+@app.get("/")
 async def root():
-    """
-    Root endpoint with API information and navigation links.
-    Provides quick access to documentation and health status.
-    """
-    uptime = time.time() - app_start_time
-    
+    """Root endpoint"""
     return {
-        "service": settings.project_name,
-        "version": settings.app_version,
-        "status": "operational",
-        "uptime_seconds": round(uptime, 2),
-        "environment": settings.environment,
-        "links": {
-            "documentation": f"{settings.docs_url}",
-            "health_check": "/health",
-            "api_v1": f"{settings.api_v1_str}",
-            "metrics": f"{settings.api_v1_str}/cities/metrics"
-        },
-        "features": [
-            "PostgreSQL async database",
-            "Redis LRU caching (10 items, 10min TTL)",
-            "Kafka request logging",
-            "CSV data import",
-            "Comprehensive health monitoring"
-        ]
+        "message": f"Welcome to {settings.project_name}",
+        "version": "1.0.0",
+        "documentation": "/docs",
+        "health": "/health",
+        "api_info": "/api/v1/cities/info"
     }
 
 
-@app.get("/info", tags=["root"])
-async def info():
-    """
-    Detailed application information for monitoring and debugging.
-    """
-    return {
-        "application": {
-            "name": settings.project_name,
-            "version": settings.app_version,
-            "environment": settings.environment,
-            "debug": settings.debug,
-            "started_at": datetime.fromtimestamp(app_start_time).isoformat() + "Z",
-            "uptime_seconds": round(time.time() - app_start_time, 2)
-        },
-        "configuration": {
-            "api_v1_prefix": settings.api_v1_str,
-            "cache_max_size": settings.cache_max_size,
-            "cache_ttl_seconds": settings.cache_ttl,
-            "cors_enabled": len(settings.cors_origins) > 0,
-            "docs_enabled": settings.docs_url is not None
-        },
-        "dependencies": {
-            "database": "PostgreSQL with async SQLAlchemy",
-            "cache": "Redis + Local LRU",
-            "messaging": "Apache Kafka",
-            "validation": "Pydantic v2",
-            "web_framework": "FastAPI"
-        }
-    }
-
-
-@app.get("/health", response_model=HealthResponse, tags=["health"])
+# Health check endpoint
+@app.get("/health", response_model=HealthResponse)
 async def health_check():
-    """
-    Comprehensive health check endpoint for monitoring and load balancers.
-    
-    Checks the health of:
-    - Database connection and query performance
-    - Redis cache availability
-    - Kafka producer connectivity
-    - Overall system status
-    
-    Returns detailed status information with response times.
-    """
-    start_time = time.time()
-    
+    """Health check endpoint that verifies all service dependencies"""
     try:
+        start_time = time.time()
+        
         # Check database health
-        db_health_info = await check_database_health()
-        db_healthy = db_health_info["status"] == "healthy"
+        db_health = await db_manager.health_check()
         
         # Check cache health
-        cache_healthy = await cache_manager.health_check()
-        cache_status = await cache_manager.get_detailed_status()
+        cache_health = await cache_manager.health_check()
         
         # Check Kafka health
-        kafka_healthy = kafka_logger.is_healthy()
-        kafka_status = await kafka_logger.get_health_status()
-        
-        # Calculate overall health status
-        if db_healthy and cache_healthy and kafka_healthy:
-            overall_status = "healthy"
-        elif db_healthy:
-            overall_status = "degraded"  # Can function without cache/kafka
-        else:
-            overall_status = "unhealthy"  # Cannot function without database
+        kafka_health = kafka_logger.is_healthy()
         
         # Calculate response time
-        response_time = (time.time() - start_time) * 1000
+        response_time_ms = (time.time() - start_time) * 1000
         
-        # Calculate uptime
-        uptime = time.time() - app_start_time
+        # Determine overall status
+        if db_health and cache_health and kafka_health:
+            status = "healthy"
+        elif db_health:  # Database is most critical
+            status = "degraded"
+        else:
+            status = "unhealthy"
         
-        health_response = {
-            "status": overall_status,
-            "timestamp": datetime.utcnow().isoformat() + "Z",
-            "response_time_ms": round(response_time, 2),
-            "uptime_seconds": round(uptime, 2),
-            "services": {
-                "database": {
-                    "status": "healthy" if db_healthy else "unhealthy",
-                    "response_time_ms": db_health_info.get("query_response_time_ms"),
-                    "details": {
-                        "host": settings.postgres_host,
-                        "database": settings.postgres_db,
-                        "connection_info": db_health_info.get("connection_info", {})
-                    }
-                },
-                "cache": {
-                    "status": "healthy" if cache_healthy else "unhealthy",
-                    "details": cache_status
-                },
-                "kafka": {
-                    "status": "healthy" if kafka_healthy else "unhealthy",
-                    "details": kafka_status.get("connection", {})
-                }
+        return HealthResponse(
+            status=status,
+            response_time_ms=response_time_ms,
+            dependencies={
+                "database": "healthy" if db_health else "unhealthy",
+                "redis": "healthy" if cache_health else "unhealthy",
+                "kafka": "healthy" if kafka_health else "unhealthy",
             }
-        }
-        
-        # Return appropriate HTTP status code
-        status_code = status.HTTP_200_OK if overall_status == "healthy" else status.HTTP_503_SERVICE_UNAVAILABLE
-        
-        return JSONResponse(
-            status_code=status_code,
-            content=health_response
         )
         
     except Exception as e:
-        logger.error(f"❌ Health check failed: {e}", exc_info=True)
-        
-        return JSONResponse(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            content={
-                "status": "unhealthy",
-                "timestamp": datetime.utcnow().isoformat() + "Z",
-                "response_time_ms": (time.time() - start_time) * 1000,
-                "error": str(e),
-                "services": {
-                    "database": {"status": "unknown"},
-                    "cache": {"status": "unknown"},
-                    "kafka": {"status": "unknown"}
-                }
-            }
-        )
+        logger.error(f"Health check failed: {e}")
+        raise HTTPException(status_code=503, detail="Service unavailable")
 
 
-# =============================================================================
-# API ROUTES REGISTRATION
-# =============================================================================
+# Application info endpoint
+@app.get("/info")
+async def app_info():
+    """Get application information"""
+    uptime_seconds = time.time() - app_start_time
+    return {
+        "name": settings.project_name,
+        "version": "1.0.0",
+        "description": "FastAPI service for managing cities and country codes",
+        "uptime_seconds": round(uptime_seconds, 2),
+        "environment": "development" if settings.debug else "production",
+        "features": {
+            "caching": "Redis LRU cache (10 items, 10-minute TTL)",
+            "logging": "Apache Kafka message streaming",
+            "database": "PostgreSQL with async SQLAlchemy",
+            "api_framework": "FastAPI with async/await support"
+        },
+        "endpoints": {
+            "health": "/health",
+            "docs": "/docs",
+            "cities": "/api/v1/cities/",
+            "metrics": "/api/v1/cities/metrics"
+        }
+    }
 
-# Include cities API router with prefix and tags
+
+# Include API routes
 app.include_router(
     cities_router,
     prefix=settings.api_v1_str,
@@ -538,20 +244,12 @@ app.include_router(
 )
 
 
-# =============================================================================
-# MAIN APPLICATION ENTRY POINT
-# =============================================================================
-
 if __name__ == "__main__":
     import uvicorn
-    
-    # Development server configuration
     uvicorn.run(
         "app.main:app",
         host=settings.api_host,
         port=settings.api_port,
         reload=settings.debug,
-        log_level=settings.log_level.lower(),
-        access_log=True,
-        reload_dirs=["app"] if settings.debug else None,
+        log_level=settings.log_level.lower()
     )
