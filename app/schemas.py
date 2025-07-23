@@ -1,195 +1,655 @@
-from typing import Optional, List
-from pydantic import BaseModel, field_validator
+# City Service API - Pydantic Schemas
+# Request/Response validation models with comprehensive error handling
+
 from datetime import datetime
+from typing import List, Optional, Dict, Any
+from pydantic import BaseModel, Field, field_validator, ConfigDict
 
 
-class CityCreateRequest(BaseModel):
-    """Schema for creating or updating a city"""
-    name: str
-    country_code: str
+# =============================================================================
+# CORE CITY SCHEMAS
+# =============================================================================
 
+class CityBase(BaseModel):
+    """Base city schema with common fields and validation."""
+    
+    name: str = Field(
+        ...,
+        min_length=2,
+        max_length=255,
+        description="City name (2-255 characters)",
+        examples=["New York", "London", "SanDiego"]
+    )
+    
+    country_code: str = Field(
+        ...,
+        min_length=2,
+        max_length=3,
+        description="Country code (2-3 characters, e.g., 'US', 'GBR')",
+        examples=["US", "GB", "CV"]
+    )
+    
     @field_validator('name')
     @classmethod
     def validate_name(cls, v: str) -> str:
-        """Validate city name - remove extra spaces and ensure proper format"""
+        """Validate and normalize city name."""
         if not v or not v.strip():
             raise ValueError('City name cannot be empty')
-
+        
         # Clean up the name: strip whitespace, title case
         cleaned_name = v.strip().title()
-
+        
         # Ensure name contains only valid characters
-        if not all(c.isalpha() or c.isspace() or c in '-_' for c in cleaned_name):
-            raise ValueError('City name can only contain letters, spaces, hyphens, and underscores')
-
+        valid_chars = set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ -'.")
+        if not set(cleaned_name).issubset(valid_chars):
+            invalid_chars = set(cleaned_name) - valid_chars
+            raise ValueError(f'City name contains invalid characters: {invalid_chars}')
+        
         return cleaned_name
-
+    
     @field_validator('country_code')
     @classmethod
     def validate_country_code(cls, v: str) -> str:
-        """Validate country code format"""
+        """Validate and normalize country code."""
         if not v or not v.strip():
             raise ValueError('Country code cannot be empty')
-
+        
         # Clean and normalize country code
         cleaned_code = v.strip().upper()
-
+        
         # Basic validation - country codes are typically 2-3 characters
         if len(cleaned_code) < 2 or len(cleaned_code) > 3:
             raise ValueError('Country code must be 2-3 characters long')
-
+        
         # Ensure only alphabetic characters
         if not cleaned_code.isalpha():
             raise ValueError('Country code can only contain letters')
-
+        
         return cleaned_code
 
 
-# Aliases for backward compatibility with API endpoints
-CityCreate = CityCreateRequest
-CityUpdate = CityCreateRequest
+class CityCreate(CityBase):
+    """Schema for creating a new city."""
+    
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "name": "SanDiego",
+                "country_code": "CV"
+            }
+        }
+    )
 
 
-class CityResponse(BaseModel):
-    """Schema for city response"""
-    id: int
-    name: str
-    country_code: str
-    created_at: datetime
-    updated_at: datetime
+class CityUpdate(CityBase):
+    """Schema for updating an existing city."""
+    
+    # Make all fields optional for partial updates
+    name: Optional[str] = Field(
+        None,
+        min_length=2,
+        max_length=255,
+        description="City name (optional for updates)"
+    )
+    
+    country_code: Optional[str] = Field(
+        None,
+        min_length=2,
+        max_length=3,
+        description="Country code (optional for updates)"
+    )
+    
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "country_code": "USA"
+            }
+        }
+    )
 
-    class Config:
-        from_attributes = True
+
+class CityResponse(CityBase):
+    """Schema for city response with metadata."""
+    
+    id: int = Field(
+        ...,
+        description="Unique city identifier",
+        examples=[1, 42, 1337]
+    )
+    
+    created_at: datetime = Field(
+        ...,
+        description="Timestamp when city was created"
+    )
+    
+    updated_at: datetime = Field(
+        ...,
+        description="Timestamp when city was last updated"
+    )
+    
+    model_config = ConfigDict(
+        from_attributes=True,
+        json_schema_extra={
+            "example": {
+                "id": 1,
+                "name": "SanDiego",
+                "country_code": "CV",
+                "created_at": "2025-07-22T15:46:00Z",
+                "updated_at": "2025-07-22T15:46:00Z"
+            }
+        }
+    )
 
 
 class CityCountryCodeResponse(BaseModel):
-    """Schema for country code response"""
-    country_code: str
+    """Schema for country code-only responses."""
+    
+    country_code: str = Field(
+        ...,
+        description="The country code for the requested city",
+        examples=["US", "GB", "CV"]
+    )
+    
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "country_code": "CV"
+            }
+        }
+    )
 
 
-class CityListResponse(BaseModel):
-    """Schema for paginated city list response"""
-    cities: List[CityResponse]
-    total: int
-    page: int
-    per_page: int
-    total_pages: int
+# =============================================================================
+# PAGINATION AND LISTING SCHEMAS
+# =============================================================================
+
+class PaginationParams(BaseModel):
+    """Schema for pagination parameters."""
+    
+    page: int = Field(
+        default=1,
+        ge=1,
+        description="Page number (starts from 1)"
+    )
+    
+    per_page: int = Field(
+        default=10,
+        ge=1,
+        le=100,
+        description="Items per page (1-100)"
+    )
 
 
-class CacheMetrics(BaseModel):
-    """Schema for cache metrics"""
-    current_size: int
-    max_size: int
-    hit_rate: float
-    total_hits: int
-    total_misses: int
-    total_requests: int
-
-
-class PerformanceMetrics(BaseModel):
-    """Schema for performance metrics"""
-    total_requests: int
-    cache_hits: int
-    cache_misses: int
-    cache_hit_percentage: float
-    uptime_seconds: float
-    kafka_healthy: bool
-
-
-class MetricsResponse(BaseModel):
-    """Schema for metrics response"""
-    cache_metrics: CacheMetrics
-    performance_metrics: PerformanceMetrics
-
-
-class HealthResponse(BaseModel):
-    """Schema for health check response"""
-    status: str
-    response_time_ms: float
-    dependencies: dict
-
-
-class ErrorResponse(BaseModel):
-    """Schema for error responses"""
-    detail: str
-    error_type: Optional[str] = None
-    field_errors: Optional[dict] = None
-
-
-class BulkCreateRequest(BaseModel):
-    """Schema for bulk city creation"""
-    cities: List[CityCreateRequest]
-
-    @field_validator('cities')
-    @classmethod
-    def validate_cities_list(cls, v: List[CityCreateRequest]) -> List[CityCreateRequest]:
-        """Validate the list of cities"""
-        if not v:
-            raise ValueError('Cities list cannot be empty')
-
-        if len(v) > 1000:
-            raise ValueError('Cannot process more than 1000 cities at once')
-
-        # Check for duplicate city names in the request
-        city_names = [city.name.lower() for city in v]
-        if len(city_names) != len(set(city_names)):
-            raise ValueError('Duplicate city names found in request')
-
-        return v
-
-
-class BulkCreateResponse(BaseModel):
-    """Schema for bulk creation response"""
-    created: int
-    updated: int
-    errors: List[dict]
-    total_processed: int
-
-
-class SearchRequest(BaseModel):
-    """Schema for search request"""
-    search: Optional[str] = None
-    country_code: Optional[str] = None
-    page: int = 1
-    per_page: int = 10
-
-    @field_validator('page')
-    @classmethod
-    def validate_page(cls, v: int) -> int:
-        """Validate page number"""
-        if v < 1:
-            raise ValueError('Page number must be greater than 0')
-        return v
-
-    @field_validator('per_page')
-    @classmethod
-    def validate_per_page(cls, v: int) -> int:
-        """Validate per_page parameter"""
-        if v < 1:
-            raise ValueError('Per page value must be greater than 0')
-        if v > 100:
-            raise ValueError('Per page value cannot exceed 100')
-        return v
-
+class SearchParams(PaginationParams):
+    """Schema for search and filtering parameters."""
+    
+    search: Optional[str] = Field(
+        default=None,
+        min_length=2,
+        max_length=100,
+        description="Search term for city names"
+    )
+    
+    country_code: Optional[str] = Field(
+        default=None,
+        min_length=2,
+        max_length=3,
+        description="Filter by country code"
+    )
+    
     @field_validator('search')
     @classmethod
     def validate_search(cls, v: Optional[str]) -> Optional[str]:
-        """Validate search term"""
+        """Validate search term."""
         if v is not None:
             v = v.strip()
             if len(v) < 2:
                 raise ValueError('Search term must be at least 2 characters long')
-            if len(v) > 50:
-                raise ValueError('Search term cannot exceed 50 characters')
         return v
 
 
+class CityListResponse(BaseModel):
+    """Schema for paginated city list responses."""
+    
+    cities: List[CityResponse] = Field(
+        ...,
+        description="List of cities for the current page"
+    )
+    
+    total: int = Field(
+        ...,
+        description="Total number of cities matching the query"
+    )
+    
+    page: int = Field(
+        ...,
+        description="Current page number"
+    )
+    
+    per_page: int = Field(
+        ...,
+        description="Number of items per page"
+    )
+    
+    total_pages: int = Field(
+        ...,
+        description="Total number of pages available"
+    )
+    
+    has_next: bool = Field(
+        ...,
+        description="Whether there are more pages available"
+    )
+    
+    has_prev: bool = Field(
+        ...,
+        description="Whether there are previous pages available"
+    )
+    
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "cities": [
+                    {
+                        "id": 1,
+                        "name": "SanDiego",
+                        "country_code": "CV",
+                        "created_at": "2025-07-22T15:46:00Z",
+                        "updated_at": "2025-07-22T15:46:00Z"
+                    }
+                ],
+                "total": 50,
+                "page": 1,
+                "per_page": 10,
+                "total_pages": 5,
+                "has_next": True,
+                "has_prev": False
+            }
+        }
+    )
+
+
+# =============================================================================
+# BULK OPERATIONS SCHEMAS
+# =============================================================================
+
+class BulkCityCreate(BaseModel):
+    """Schema for bulk city creation."""
+    
+    cities: List[CityCreate] = Field(
+        ...,
+        min_length=1,
+        max_length=1000,
+        description="List of cities to create (max 1000)"
+    )
+    
+    update_existing: bool = Field(
+        default=False,
+        description="Whether to update existing cities with same name"
+    )
+    
+    @field_validator('cities')
+    @classmethod
+    def validate_cities(cls, v: List[CityCreate]) -> List[CityCreate]:
+        """Validate cities list for duplicates."""
+        if not v:
+            raise ValueError('Cities list cannot be empty')
+        
+        # Check for duplicates within the request
+        city_names = [city.name.lower() for city in v]
+        if len(city_names) != len(set(city_names)):
+            raise ValueError('Duplicate city names found in request')
+        
+        return v
+
+
+class BulkOperationResponse(BaseModel):
+    """Schema for bulk operation results."""
+    
+    created: int = Field(
+        ...,
+        description="Number of cities created"
+    )
+    
+    updated: int = Field(
+        ...,
+        description="Number of cities updated"
+    )
+    
+    errors: List[Dict[str, Any]] = Field(
+        default=[],
+        description="List of errors encountered"
+    )
+    
+    total_processed: int = Field(
+        ...,
+        description="Total number of records processed"
+    )
+    
+    processing_time_seconds: float = Field(
+        ...,
+        description="Time taken to process the request"
+    )
+
+
+# =============================================================================
+# METRICS AND MONITORING SCHEMAS
+# =============================================================================
+
+class CacheMetrics(BaseModel):
+    """Schema for cache performance metrics."""
+    
+    current_size: int = Field(
+        ...,
+        description="Current number of items in cache"
+    )
+    
+    max_size: int = Field(
+        ...,
+        description="Maximum cache size"
+    )
+    
+    hit_rate: float = Field(
+        ...,
+        ge=0,
+        le=100,
+        description="Cache hit rate percentage"
+    )
+    
+    total_hits: int = Field(
+        ...,
+        description="Total cache hits"
+    )
+    
+    total_misses: int = Field(
+        ...,
+        description="Total cache misses"
+    )
+    
+    total_requests: int = Field(
+        ...,
+        description="Total cache requests"
+    )
+
+
+class PerformanceMetrics(BaseModel):
+    """Schema for application performance metrics."""
+    
+    total_requests: int = Field(
+        ...,
+        description="Total API requests processed"
+    )
+    
+    cache_hits: int = Field(
+        ...,
+        description="Number of cache hits"
+    )
+    
+    cache_misses: int = Field(
+        ...,
+        description="Number of cache misses"
+    )
+    
+    cache_hit_percentage: float = Field(
+        ...,
+        ge=0,
+        le=100,
+        description="Cache hit percentage since startup"
+    )
+    
+    uptime_seconds: float = Field(
+        ...,
+        description="Application uptime in seconds"
+    )
+    
+    average_response_time_ms: float = Field(
+        ...,
+        description="Average response time in milliseconds"
+    )
+
+
+class MetricsResponse(BaseModel):
+    """Schema for comprehensive metrics response."""
+    
+    cache_metrics: CacheMetrics = Field(
+        ...,
+        description="Cache performance metrics"
+    )
+    
+    performance_metrics: PerformanceMetrics = Field(
+        ...,
+        description="Application performance metrics"
+    )
+    
+    timestamp: datetime = Field(
+        ...,
+        description="When these metrics were collected"
+    )
+
+
+# =============================================================================
+# HEALTH CHECK SCHEMAS
+# =============================================================================
+
+class ServiceStatus(BaseModel):
+    """Schema for individual service status."""
+    
+    status: str = Field(
+        ...,
+        description="Service status",
+        pattern="^(healthy|unhealthy|degraded)$"
+    )
+    
+    response_time_ms: Optional[float] = Field(
+        None,
+        description="Service response time in milliseconds"
+    )
+    
+    details: Optional[Dict[str, Any]] = Field(
+        None,
+        description="Additional service details"
+    )
+
+
+class HealthResponse(BaseModel):
+    """Schema for health check responses."""
+    
+    status: str = Field(
+        ...,
+        description="Overall system status",
+        pattern="^(healthy|unhealthy|degraded)$"
+    )
+    
+    timestamp: datetime = Field(
+        ...,
+        description="Health check timestamp"
+    )
+    
+    response_time_ms: float = Field(
+        ...,
+        description="Total health check response time"
+    )
+    
+    services: Dict[str, ServiceStatus] = Field(
+        ...,
+        description="Status of individual services"
+    )
+    
+    uptime_seconds: float = Field(
+        ...,
+        description="Application uptime in seconds"
+    )
+
+
+# =============================================================================
+# ERROR RESPONSE SCHEMAS
+# =============================================================================
+
+class ErrorDetail(BaseModel):
+    """Schema for error details."""
+    
+    field: Optional[str] = Field(
+        None,
+        description="Field name where error occurred"
+    )
+    
+    message: str = Field(
+        ...,
+        description="Error message"
+    )
+    
+    code: Optional[str] = Field(
+        None,
+        description="Error code"
+    )
+
+
+class ErrorResponse(BaseModel):
+    """Schema for error responses."""
+    
+    detail: str = Field(
+        ...,
+        description="Main error message"
+    )
+    
+    error_type: Optional[str] = Field(
+        None,
+        description="Type of error"
+    )
+    
+    field_errors: Optional[List[ErrorDetail]] = Field(
+        None,
+        description="Field-specific validation errors"
+    )
+    
+    timestamp: datetime = Field(
+        default_factory=datetime.utcnow,
+        description="When the error occurred"
+    )
+    
+    request_id: Optional[str] = Field(
+        None,
+        description="Request ID for tracking"
+    )
+
+
+# =============================================================================
+# CSV IMPORT SCHEMAS
+# =============================================================================
+
+class CSVImportRequest(BaseModel):
+    """Schema for CSV import requests."""
+    
+    file_path: str = Field(
+        ...,
+        description="Path to CSV file to import"
+    )
+    
+    update_existing: bool = Field(
+        default=True,
+        description="Whether to update existing cities"
+    )
+    
+    batch_size: int = Field(
+        default=1000,
+        ge=100,
+        le=10000,
+        description="Number of records to process per batch"
+    )
+    
+    @field_validator('file_path')
+    @classmethod
+    def validate_file_path(cls, v: str) -> str:
+        """Validate CSV file path."""
+        if not v.strip():
+            raise ValueError('File path cannot be empty')
+        
+        if not v.lower().endswith('.csv'):
+            raise ValueError('File must be a CSV file')
+        
+        return v.strip()
+
+
 class CSVImportResponse(BaseModel):
-    """Schema for CSV import response"""
-    total_rows: int
-    processed_rows: int
-    created_cities: int
-    updated_cities: int
-    skipped_rows: int
-    errors: List[dict]
-    processing_time_seconds: float
+    """Schema for CSV import results."""
+    
+    total_rows: int = Field(
+        ...,
+        description="Total rows in CSV file"
+    )
+    
+    processed_rows: int = Field(
+        ...,
+        description="Number of rows successfully processed"
+    )
+    
+    created_cities: int = Field(
+        ...,
+        description="Number of new cities created"
+    )
+    
+    updated_cities: int = Field(
+        ...,
+        description="Number of existing cities updated"
+    )
+    
+    skipped_rows: int = Field(
+        ...,
+        description="Number of rows skipped due to errors"
+    )
+    
+    errors: List[Dict[str, Any]] = Field(
+        default=[],
+        description="Detailed error information"
+    )
+    
+    processing_time_seconds: float = Field(
+        ...,
+        description="Total processing time"
+    )
+    
+    file_path: str = Field(
+        ...,
+        description="Path to processed CSV file"
+    )
+
+
+# =============================================================================
+# UTILITY FUNCTIONS
+# =============================================================================
+
+def create_error_response(
+    message: str,
+    error_type: str = None,
+    field_errors: List[ErrorDetail] = None,
+    request_id: str = None
+) -> ErrorResponse:
+    """Helper function to create standardized error responses."""
+    return ErrorResponse(
+        detail=message,
+        error_type=error_type,
+        field_errors=field_errors,
+        request_id=request_id
+    )
+
+
+def create_validation_error_response(
+    errors: List[Dict[str, Any]],
+    request_id: str = None
+) -> ErrorResponse:
+    """Helper function to create validation error responses."""
+    field_errors = [
+        ErrorDetail(
+            field=error.get('loc', ['unknown'])[-1],
+            message=error.get('msg', 'Validation error'),
+            code=error.get('type', 'validation_error')
+        )
+        for error in errors
+    ]
+    
+    return ErrorResponse(
+        detail="Validation failed",
+        error_type="validation_error",
+        field_errors=field_errors,
+        request_id=request_id
+    )
