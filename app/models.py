@@ -13,7 +13,7 @@ class City(Base):
     __tablename__ = "cities"
     
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(255), index=True, nullable=False)  # REMOVE unique=True
+    name = Column(String(255), index=True, nullable=False)  # REMOVED unique=True
     country_code = Column(String(20), nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
