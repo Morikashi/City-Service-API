@@ -1,289 +1,78 @@
-TEST_CITIES = [
-    {"name": "Tokyo", "country_code": ("KZ", "LU", "TK", "VN", "HM", "GH", "BY", "IM", "TV", "AO", "TG", "GE", "FR", "ZW", "TH", "WF", "OM")},
-    {"name": "London", "country_code": ("BA", "SI", "FM", "HU", "FR", "CC", "CN", "GB", "NA", "BA", "SH", "LT", "SD", "TC", "BT", "UY", "TT", "TZ", "SI", "FM", "HU")}, 
-    {"name": "New York City", "country_code": ("GA", "SK", "CU", "AL", "PH", "NO", "BF", "IL", "NC", "SC", "NC", "FI", "SV")},
-    {"name": "Paris", "country_code": ("AU", "BD", "CK", "JE", "FK", "MP", "MA", "GF", "VG", "SI", "GQ")},
-    {"name": "Berlin", "country_code": ("EH", "AX", "TG", "NU", "EG")}
-]
+✓ health
+✗ POST Tokyo:KZ -> 307
+✗ POST Tokyo:LU -> 307
+✗ POST Tokyo:TK -> 307
+✗ POST Tokyo:VN -> 307
+✗ POST Tokyo:HM -> 307
+✗ POST Tokyo:GH -> 307
+✗ POST Tokyo:BY -> 307
+✗ POST Tokyo:IM -> 307
+✗ POST Tokyo:TV -> 307
+✗ POST Tokyo:AO -> 307
+✗ POST Tokyo:TG -> 307
+✗ POST Tokyo:GE -> 307
+✗ POST Tokyo:FR -> 307
+✗ POST Tokyo:ZW -> 307
+✗ POST Tokyo:TH -> 307
+✗ POST Tokyo:WF -> 307
+✗ POST Tokyo:OM -> 307
+✗ POST London:BA -> 307
+✗ POST London:SI -> 307
+✗ POST London:FM -> 307
+✗ POST London:HU -> 307
+✗ POST London:FR -> 307
+✗ POST London:CC -> 307
+✗ POST London:CN -> 307
+✗ POST London:GB -> 307
+✗ POST London:NA -> 307
+✗ POST London:SH -> 307
+✗ POST London:LT -> 307
+✗ POST London:SD -> 307
+✗ POST London:TC -> 307
+✗ POST London:BT -> 307
+✗ POST London:UY -> 307
+✗ POST London:TT -> 307
+✗ POST London:TZ -> 307
+✗ POST New York City:GA -> 307
+✗ POST New York City:SK -> 307
+✗ POST New York City:CU -> 307
+✗ POST New York City:AL -> 307
+✗ POST New York City:PH -> 307
+✗ POST New York City:NO -> 307
+✗ POST New York City:BF -> 307
+✗ POST New York City:IL -> 307
+✗ POST New York City:NC -> 307
+✗ POST New York City:SC -> 307
+✗ POST New York City:FI -> 307
+✗ POST New York City:SV -> 307
+✗ POST Paris:AU -> 307
+✗ POST Paris:BD -> 307
+✗ POST Paris:CK -> 307
+✗ POST Paris:JE -> 307
+✗ POST Paris:FK -> 307
+✗ POST Paris:MP -> 307
+✗ POST Paris:MA -> 307
+✗ POST Paris:GF -> 307
+✗ POST Paris:VG -> 307
+✗ POST Paris:SI -> 307
+✗ POST Paris:GQ -> 307
+✗ POST Berlin:EH -> 307
+✗ POST Berlin:AX -> 307
+✗ POST Berlin:TG -> 307
+✗ POST Berlin:NU -> 307
+✗ POST Berlin:EG -> 307
+✗ GET first code Tokyo -> 404
+✗ GET first code London -> 404
+✗ GET first code New York City -> 404
+✗ GET first code Paris -> 404
+✗ GET first code Berlin -> 404
+✗ GET all codes Tokyo -> 404
+✗ GET all codes London -> 404
+✗ GET all codes New York City -> 404
+✗ GET all codes Paris -> 404
+✗ GET all codes Berlin -> 404
+✗ list 307
+✗ metrics 404
+✗ delete Tokyo:KZ -> 404
 
-
-# app/api/cities.py
-
-import time
-import logging
-from typing import List, Optional
-
-from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.future import select
-from sqlalchemy import func, delete
-from sqlalchemy.exc import IntegrityError
-
-from app.database import get_db
-from app.models import City
-from app.schemas import (
-    CityCreate,
-    CityResponse,
-    CityCountryCodeResponse,
-    CityCountryCodesResponse,
-    CityListResponse,
-    MetricsResponse,
-)
-from app.cache import get_cache, CacheManager
-from app.kafka_logger import get_kafka_logger, KafkaLogger
-
-logger = logging.getLogger(__name__)
-router = APIRouter()
-
-
-@router.post("/", response_model=CityResponse, status_code=201)
-async def create_city_country_mapping(
-    city_data: CityCreate,
-    db: AsyncSession = Depends(get_db),
-    cache: CacheManager = Depends(get_cache)
-):
-    """
-    Create a new city-country code mapping.
-    Now allows multiple country codes for the same city.
-    """
-    try:
-        # Check if this exact combination already exists
-        stmt = select(City).where(
-            func.lower(City.name) == city_data.name.lower(),
-            City.country_code == city_data.country_code
-        )
-        existing = (await db.execute(stmt)).scalar_one_or_none()
-        
-        if existing:
-            # This exact combination already exists, just return it
-            logger.info(f"City-country mapping already exists: {city_data.name} -> {city_data.country_code}")
-            return existing
-        
-        # Create new mapping
-        new_city = City(name=city_data.name, country_code=city_data.country_code)
-        db.add(new_city)
-        await db.commit()
-        await db.refresh(new_city)
-        
-        # Invalidate cache for this city since we added a new country code
-        await cache.delete(f"city:{city_data.name.lower()}")
-        
-        logger.info(f"Created new city-country mapping: {city_data.name} -> {city_data.country_code}")
-        return new_city
-        
-    except IntegrityError as e:
-        await db.rollback()
-        logger.error(f"Integrity error creating city mapping: {e}")
-        raise HTTPException(status_code=400, detail="City-country code mapping already exists")
-
-
-@router.get("/{city_name}/country-code", response_model=CityCountryCodeResponse)
-async def get_city_country_code(
-    city_name: str,
-    db: AsyncSession = Depends(get_db),
-    cache: CacheManager = Depends(get_cache),
-    kafka: KafkaLogger = Depends(get_kafka_logger)
-):
-    """
-    Get a country code for a city. If multiple codes exist, returns the first one.
-    For all codes, use the /country-codes endpoint.
-    """
-    start_time = time.time()
-    cache_key = f"city:{city_name.lower()}"
-
-    # Try cache first
-    cached_value = await cache.get(cache_key)
-    if cached_value:
-        response_time = time.time() - start_time
-        kafka.log_request(city_name, response_time, cache_hit=True, status_code=200)
-        return CityCountryCodeResponse(country_code=cached_value)
-
-    # Query database - get the first country code for this city
-    stmt = select(City).where(func.lower(City.name) == city_name.lower()).limit(1)
-    result = await db.execute(stmt)
-    city = result.scalar_one_or_none()
-
-    if not city:
-        response_time = time.time() - start_time
-        kafka.log_request(city_name, response_time, cache_hit=False, status_code=404)
-        raise HTTPException(status_code=404, detail="City not found")
-
-    # Cache the first country code found
-    await cache.set(cache_key, city.country_code)
-    
-    response_time = time.time() - start_time
-    kafka.log_request(city_name, response_time, cache_hit=False, status_code=200)
-    
-    return CityCountryCodeResponse(country_code=city.country_code)
-
-
-@router.get("/{city_name}/country-codes", response_model=CityCountryCodesResponse)
-async def get_city_country_codes(
-    city_name: str,
-    db: AsyncSession = Depends(get_db)
-):
-    """
-    Get ALL country codes for a city.
-    """
-    stmt = select(City.country_code).where(func.lower(City.name) == city_name.lower())
-    result = await db.execute(stmt)
-    country_codes = [row[0] for row in result.fetchall()]
-    
-    if not country_codes:
-        raise HTTPException(status_code=404, detail="City not found")
-    
-    return CityCountryCodesResponse(
-        city_name=city_name,
-        country_codes=country_codes,
-        total_codes=len(country_codes)
-    )
-
-
-@router.get("/", response_model=CityListResponse)
-async def list_cities(
-    db: AsyncSession = Depends(get_db),
-    page: int = Query(1, ge=1),
-    per_page: int = Query(10, ge=1, le=100),
-    unique_cities: bool = Query(False, description="If true, returns unique city names only")
-):
-    """
-    List cities. By default shows all city-country mappings.
-    Set unique_cities=true to get unique city names only.
-    """
-    offset = (page - 1) * per_page
-    
-    if unique_cities:
-        # Get unique city names only
-        stmt = select(func.distinct(City.name)).offset(offset).limit(per_page)
-        result = await db.execute(stmt)
-        unique_names = [row[0] for row in result.fetchall()]
-        
-        # Count total unique cities
-        count_stmt = select(func.count(func.distinct(City.name)))
-        total = (await db.execute(count_stmt)).scalar_one()
-        
-        # Create dummy city objects for response
-        cities = [
-            CityResponse(
-                id=0, name=name, country_code="MULTIPLE", 
-                created_at=datetime.now(), updated_at=datetime.now()
-            ) 
-            for name in unique_names
-        ]
-    else:
-        # Get all city-country mappings
-        count_stmt = select(func.count()).select_from(City)
-        total = (await db.execute(count_stmt)).scalar_one()
-        
-        stmt = select(City).offset(offset).limit(per_page)
-        result = await db.execute(stmt)
-        cities = result.scalars().all()
-    
-    return CityListResponse(
-        cities=cities,
-        total=total,
-        page=page,
-        per_page=per_page,
-        total_pages=(total + per_page - 1) // per_page
-    )
-
-
-@router.delete("/{city_name}")
-async def delete_city_mappings(
-    city_name: str,
-    db: AsyncSession = Depends(get_db),
-    cache: CacheManager = Depends(get_cache),
-    country_code: Optional[str] = Query(None, description="Specific country code to delete")
-):
-    """
-    Delete city mappings. If country_code is provided, deletes only that mapping.
-    Otherwise, deletes ALL mappings for the city.
-    """
-    if country_code:
-        # Delete specific city-country mapping
-        stmt = delete(City).where(
-            func.lower(City.name) == city_name.lower(),
-            City.country_code == country_code.upper()
-        )
-    else:
-        # Delete all mappings for this city
-        stmt = delete(City).where(func.lower(City.name) == city_name.lower())
-    
-    result = await db.execute(stmt)
-    await db.commit()
-    
-    if result.rowcount == 0:
-        raise HTTPException(status_code=404, detail="City mapping not found")
-    
-    # Clear cache for this city
-    await cache.delete(f"city:{city_name.lower()}")
-    
-    return {"message": f"Deleted {result.rowcount} mapping(s) for {city_name}"}
-
-
-@router.get("/metrics", response_model=MetricsResponse)
-async def get_metrics(
-    cache: CacheManager = Depends(get_cache),
-    kafka: KafkaLogger = Depends(get_kafka_logger)
-):
-    """Get performance metrics for the application."""
-    cache_stats = cache.get_stats()
-    
-    return MetricsResponse(
-        cache_metrics=cache_stats,
-        performance_metrics={
-            "total_requests": kafka.total_requests,
-            "cache_hits": kafka.cache_hits,
-            "cache_misses": kafka.total_requests - kafka.cache_hits,
-            "cache_hit_percentage": (
-                kafka.cache_hits / kafka.total_requests * 100
-                if kafka.total_requests > 0 else 0
-            ),
-            "uptime_seconds": 0
-        }
-    )
-
-
-
-
-# app/models.py
-
-from sqlalchemy import Column, Integer, String, DateTime, Index, UniqueConstraint
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.sql import func
-from datetime import datetime
-from typing import Dict, Any
-
-Base = declarative_base()
-
-
-class City(Base):
-    __tablename__ = "cities"
-    
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(255), index=True, nullable=False)  # REMOVED unique=True
-    country_code = Column(String(20), nullable=False)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
-    
-    # Composite unique constraint - same city can have multiple country codes
-    # but each (city, country_code) combination should be unique
-    __table_args__ = (
-        UniqueConstraint('name', 'country_code', name='uq_city_country'),
-        Index('idx_city_name', 'name'),
-        Index('idx_country_code', 'country_code'),
-        Index('idx_city_name_country', 'name', 'country_code'),
-    )
-    
-    def to_dict(self) -> Dict[str, Any]:
-        """Convert model instance to dictionary"""
-        return {
-            "id": self.id,
-            "name": self.name,
-            "country_code": self.country_code,
-            "created_at": self.created_at.isoformat() if self.created_at else None,
-            "updated_at": self.updated_at.isoformat() if self.updated_at else None,
-        }
-    
-    def __repr__(self) -> str:
-        return f"<City(name='{self.name}', country_code='{self.country_code}')>"
+RESULT: 1/76 passed, 75 failed
