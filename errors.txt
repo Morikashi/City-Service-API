@@ -1,6 +1,6 @@
 OpenSSH_9.9p2, LibreSSL 3.3.6
-debug1: Reading configuration data /Users/mortezakashani/.ssh/config
-debug1: /Users/mortezakashani/.ssh/config line 1: Applying options for heartsight
+debug1: Reading configuration data /Users/.../.ssh/config
+debug1: /Users/.../.ssh/config line 1: Applying options for heartsight
 debug1: Reading configuration data /etc/ssh/ssh_config
 debug1: Reading configuration data /etc/ssh/ssh_config.d/100-macos.conf
 debug1: /etc/ssh/ssh_config.d/100-macos.conf line 1: Applying options for *
@@ -8,13 +8,13 @@ debug1: Reading configuration data /etc/ssh/crypto.conf
 debug1: Authenticator provider $SSH_SK_PROVIDER did not resolve; disabling
 debug1: Connecting to ec2-34-219-98-161.us-west-2.compute.amazonaws.com port 22.
 debug1: Connection established.
-debug1: identity file /Users/mortezakashani/Downloads/heartsightai.pem type -1
-debug1: identity file /Users/mortezakashani/Downloads/heartsightai.pem-cert type -1
+debug1: identity file /Users/.../Downloads/heartsightai.pem type -1
+debug1: identity file /Users/.../Downloads/heartsightai.pem-cert type -1
 debug1: Local version string SSH-2.0-OpenSSH_9.9
 debug1: Remote protocol version 2.0, remote software version OpenSSH_8.9p1 Ubuntu-3ubuntu0.13
 debug1: compat_banner: match: OpenSSH_8.9p1 Ubuntu-3ubuntu0.13 pat OpenSSH* compat 0x04000000
 debug1: Authenticating to ec2-34-219-98-161.us-west-2.compute.amazonaws.com:22 as 'ubuntu'
-debug1: load_hostkeys: fopen /Users/mortezakashani/.ssh/known_hosts2: No such file or directory
+debug1: load_hostkeys: fopen /Users/.../.ssh/known_hosts2: No such file or directory
 debug1: load_hostkeys: fopen /etc/ssh/ssh_known_hosts: No such file or directory
 debug1: load_hostkeys: fopen /etc/ssh/ssh_known_hosts2: No such file or directory
 debug1: SSH2_MSG_KEXINIT sent
@@ -26,11 +26,11 @@ debug1: kex: client->server cipher: aes128-gcm@openssh.com MAC: <implicit> compr
 debug1: expecting SSH2_MSG_KEX_ECDH_REPLY
 debug1: SSH2_MSG_KEX_ECDH_REPLY received
 debug1: Server host key: ssh-ed25519 SHA256:bthignJwEyDOhfDYNjBdVE1gKxOA/UU1X1bheqRnx1A
-debug1: load_hostkeys: fopen /Users/mortezakashani/.ssh/known_hosts2: No such file or directory
+debug1: load_hostkeys: fopen /Users/.../.ssh/known_hosts2: No such file or directory
 debug1: load_hostkeys: fopen /etc/ssh/ssh_known_hosts: No such file or directory
 debug1: load_hostkeys: fopen /etc/ssh/ssh_known_hosts2: No such file or directory
 debug1: Host 'ec2-34-219-98-161.us-west-2.compute.amazonaws.com' is known and matches the ED25519 host key.
-debug1: Found key in /Users/mortezakashani/.ssh/known_hosts:1
+debug1: Found key in /Users/.../.ssh/known_hosts:1
 debug1: ssh_packet_send2_wrapped: resetting send seqnr 3
 debug1: rekey out after 4294967296 blocks
 debug1: SSH2_MSG_NEWKEYS sent
@@ -46,8 +46,8 @@ debug1: Authentications that can continue: publickey
 debug1: Next authentication method: publickey
 debug1: get_agent_identities: bound agent to hostkey
 debug1: get_agent_identities: ssh_fetch_identitylist: agent contains no identities
-debug1: Will attempt key: /Users/mortezakashani/Downloads/heartsightai.pem  explicit
-debug1: Trying private key: /Users/mortezakashani/Downloads/heartsightai.pem
+debug1: Will attempt key: /Users/.../Downloads/heartsightai.pem  explicit
+debug1: Trying private key: /Users/.../Downloads/heartsightai.pem
 Authenticated to ec2-34-219-98-161.us-west-2.compute.amazonaws.com ([34.219.98.161]:22) using "publickey".
 debug1: Local connections to LOCALHOST:60948 forwarded to remote address socks:0
 debug1: Local forwarding listening on 127.0.0.1 port 60948.
@@ -59,9 +59,9 @@ debug1: Requesting no-more-sessions@openssh.com
 debug1: Entering interactive session.
 debug1: pledge: filesystem
 debug1: client_input_global_request: rtype hostkeys-00@openssh.com want_reply 0
-debug1: client_input_hostkeys: searching /Users/mortezakashani/.ssh/known_hosts for ec2-34-219-98-161.us-west-2.compute.amazonaws.com / (none)
-debug1: client_input_hostkeys: searching /Users/mortezakashani/.ssh/known_hosts2 for ec2-34-219-98-161.us-west-2.compute.amazonaws.com / (none)
-debug1: client_input_hostkeys: hostkeys file /Users/mortezakashani/.ssh/known_hosts2 does not exist
+debug1: client_input_hostkeys: searching /Users/.../.ssh/known_hosts for ec2-34-219-98-161.us-west-2.compute.amazonaws.com / (none)
+debug1: client_input_hostkeys: searching /Users/.../.ssh/known_hosts2 for ec2-34-219-98-161.us-west-2.compute.amazonaws.com / (none)
+debug1: client_input_hostkeys: hostkeys file /Users/.../.ssh/known_hosts2 does not exist
 debug1: client_input_hostkeys: no new or deprecated keys from server
 debug1: Remote: /home/ubuntu/.ssh/authorized_keys:1: key options: agent-forwarding port-forwarding pty user-rc x11-forwarding
 debug1: Sending environment.
